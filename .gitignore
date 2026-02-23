@@ -1,45 +1,41 @@
-# Miscellaneous
-*.class
-*.log
-*.pyc
-*.swp
-.DS_Store
-.atom/
-.build/
-.buildlog/
-.history
-.svn/
-.swiftpm/
-migrate_working_dir/
-
-# IntelliJ related
-*.iml
-*.ipr
-*.iws
-.idea/
-
-# The .vscode folder contains launch configuration and tasks you configure in
-# VS Code which you may wish to be included in version control, so this line
-# is commented out by default.
-#.vscode/
-
-# Flutter/Dart/Pub related
-**/doc/api/
-**/ios/Flutter/.last_build_id
+# -----------------------------------------------------------------------
+# Flutter/Dart & Build Output
+# -----------------------------------------------------------------------
 .dart_tool/
 .flutter-plugins
 .flutter-plugins-dependencies
+.packages
 .pub-cache/
 .pub/
 /build/
 
-# Symbolication related
-app.*.symbols
+# Note: Keep pubspec.lock for apps, ignore for packages.
 
-# Obfuscation related
-app.*.map.json
+# -----------------------------------------------------------------------
+# Platform Specifics (Android/iOS/Desktop)
+# -----------------------------------------------------------------------
+**/android/app/local.properties
+**/android/app/key.properties
+**/android/app/debug/
+**/android/app/release/
+.gradle/
+**/ios/Pods/
+**/Podfile.lock
+**/macos/Pods/
+**/windows/flutter/ephemeral/
+**/linux/flutter/ephemeral/
 
-# Android Studio will place build artifacts here
-/android/app/debug
-/android/app/profile
-/android/app/release
+# -----------------------------------------------------------------------
+# IDE & System Files
+# -----------------------------------------------------------------------
+.idea/
+.vscode/
+*.iml
+.DS_Store
+
+# -----------------------------------------------------------------------
+# Secrets & Configuration (Crucial)
+# -----------------------------------------------------------------------
+.env
+.env.*
+!*.example  # Keep template env files for team reference

@@ -1,0 +1,19 @@
+{
+  "@@locale": "en",
+  "emailAddress": "Email Address",
+  "allTrees": "All Trees",
+  "create": "Create",
+  "createTree": "Create Tree",
+  "title": "Title",
+  "selectAffiliation": "Select Affiliation",
+  "addRootMember": "Add Root Member",
+  "userName": "User Name",
+  "userId": "User Id",
+  "phoneNumber": "Phone Number",
+  "newTree": "New Tree",
+  "update": "Update",
+  "downloadTrees": "Download Trees",
+  "export": "Export",
+  "exportTo": "Export To",
+  "home": "Home"
+}

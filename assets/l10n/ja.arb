@@ -1,0 +1,19 @@
+{
+  "@@locale": "ja",
+  "emailAddress": "メールアドレス",
+  "allTrees": "すべてのツリー",
+  "create": "作成する",
+  "createTree": "ツリーの追加",
+  "title": "タイトル",
+  "selectAffiliation": "系列",
+  "addRootMember": "ルートメンバー",
+  "userName": "ユーザー名",
+  "userId": "ユーザー番号",
+  "phoneNumber": "電話番号",
+  "newTree": "マップ9",
+  "update": "更新",
+  "downloadTrees": "樹木のダウンロード",
+  "export": "輸出",
+  "exportTo": "輸出",
+  "home": "ホーム"
+}

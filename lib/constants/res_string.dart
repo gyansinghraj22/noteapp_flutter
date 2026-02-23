@@ -1,0 +1,19 @@
+enum ResString {
+  goBack,
+  pageNotFound,
+  allTrees,
+  create,
+  createTree,
+  title,
+  selectAffiliation,
+  addRootMember,
+  userName,
+  userId,
+  phoneNumber,
+  newTree,
+  update,
+  downloadTrees,
+  export,
+  exportTo,
+  home
+}

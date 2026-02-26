@@ -275,7 +275,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   fontFamily: "Satoshi",
                 ),
               ),
-              SizedBox(height: 24.h),
+              SizedBox(height: 16.h),
 
               // Buttons
               Row(
@@ -307,11 +307,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     ),
                   ),
                   SizedBox(width: 16.w),
-                  MyCustomTextButton(
-                    text: "Log Out",
-                    backgroundColor: Color(0xFF34F4C6),
-                    textColor: Color(0xFF0A3128),
-                    onTap: () {},
+                  CustomTextButton(
+                    label: "Log Out",
+                    // backgroundColor: Color(0xFF34F4C6),
+                    labelStyle: TextStyle(color: Color(0xFF0A3128)),
+                    onPressed: () {},
                   ),
                 ],
               ),

@@ -655,77 +655,6 @@ class CustomButtonWithoutIcon extends StatelessWidget {
   }
 }
 
-class CustomButtonWithIcon extends StatelessWidget {
-  final VoidCallback? onPressed;
-  final String label;
-  final double? width;
-  final Color? color;
-  final Color? labelColor;
-  final bool? showLoading;
-
-  const CustomButtonWithIcon({
-    super.key,
-    required this.label,
-    this.onPressed,
-    this.width,
-    this.color,
-    this.labelColor,
-    this.showLoading = false,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      height: 48,
-      width: width ?? MediaQuery.of(context).size.width,
-      child: ElevatedButton(
-        style: ButtonStyle(
-          backgroundColor:
-              color != null
-                  ? WidgetStateProperty.all(color)
-                  : WidgetStateProperty.all(
-                    context.applyAppColor(
-                      palette: ColorPalete.brand,
-                      swatch: 500,
-                    ),
-                  ),
-          shape: WidgetStateProperty.all<RoundedRectangleBorder>(
-            RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
-          ),
-        ),
-        onPressed: onPressed,
-        child:
-            showLoading == true
-                ? const Center(
-                  child: CircularProgressIndicator(color: AppColor.whiteColor),
-                )
-                : Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      label,
-                      style:
-                          context
-                              .textStyle(
-                                palette: ColorPalete.white,
-                                swatch: 500,
-                              )
-                              .largeBody
-                              .semiBold,
-                    ),
-                    SizedBox(width: 10.w),
-                    iconoir.ArrowRight(
-                      width: 20.w,
-                      height: 20.h,
-                      color: context.applyAppColor(palette: ColorPalete.white),
-                    ),
-                  ],
-                ),
-      ),
-    );
-  }
-}
-
 class CustomOutlinedButtonWithIcon extends StatelessWidget {
   final VoidCallback? onPressed;
   final String label;
@@ -844,43 +773,88 @@ class CustomBorderButton extends StatelessWidget {
   }
 }
 
-class MyCustomTextButton extends StatelessWidget {
-  final String text;
-  final Color backgroundColor;
-  final Color textColor;
-  final VoidCallback onTap;
+class CustomButtonWithIcon extends StatelessWidget {
+  final VoidCallback? onPressed;
+  final String label;
+  final IconData? leadingIcon;
+  final IconData? trailingIcon;
+  final double? width;
+  final Color? color;
+  final Color? labelColor;
+  final bool? showLoading;
 
-  const MyCustomTextButton({
+  const CustomButtonWithIcon({
     super.key,
-    required this.text,
-    required this.backgroundColor,
-    required this.textColor,
-    required this.onTap,
+    required this.label,
+    this.leadingIcon,
+    this.trailingIcon,
+    this.onPressed,
+    this.width,
+    this.color,
+    this.labelColor,
+    this.showLoading = false,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Expanded(
+    return SizedBox(
+      height: 48,
+      width: width ?? MediaQuery.of(context).size.width,
       child: ElevatedButton(
-        onPressed: onTap,
-        style: ElevatedButton.styleFrom(
-          backgroundColor: backgroundColor,
-          foregroundColor: textColor,
-          elevation: 0, // flat look
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(35.r), // pill shape
-          ),
-          minimumSize: Size(double.infinity, 36.h), // height 36
-        ),
-        child: Text(
-          text,
-          style: TextStyle(
-            fontSize: 14.sp,
-            fontWeight: FontWeight.w500,
-            fontFamily: "Satoshi",
-            color: textColor,
+        style: ButtonStyle(
+          backgroundColor:
+              color != null
+                  ? WidgetStateProperty.all(color)
+                  : WidgetStateProperty.all(
+                    context.applyAppColor(
+                      palette: ColorPalete.brand,
+                      swatch: 500,
+                    ),
+                  ),
+          shape: WidgetStateProperty.all<RoundedRectangleBorder>(
+            RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
           ),
         ),
+        onPressed: onPressed,
+        child:
+            showLoading == true
+                ? const Center(
+                  child: CircularProgressIndicator(color: AppColor.whiteColor),
+                )
+                : Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    if (leadingIcon != null)
+                      Icon(
+                        leadingIcon,
+                        size: 20.sp,
+                        color: context.applyAppColor(
+                          palette: ColorPalete.white,
+                        ),
+                      ),
+                    if (leadingIcon != null) SizedBox(width: 10.w),
+                    Text(
+                      label,
+                      style:
+                          context
+                              .textStyle(
+                                palette: ColorPalete.white,
+                                swatch: 500,
+                              )
+                              .largeBody
+                              .semiBold,
+                    ),
+                    SizedBox(width: 10.w),
+                    if (trailingIcon != null)
+                      Icon(
+                        trailingIcon,
+                        size: 20.sp,
+                        color: context.applyAppColor(
+                          palette: ColorPalete.white,
+                        ),
+                      ),
+                  ],
+                ),
       ),
     );
   }

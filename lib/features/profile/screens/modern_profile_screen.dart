@@ -4,14 +4,14 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:noteapp/core/config/theme_cubit.dart';
 import 'package:noteapp/core/config/theme_settings_page.dart';
 
-class ProfileScreen extends StatefulWidget {
-  const ProfileScreen({super.key});
+class ModernProfileScreen extends StatefulWidget {
+  const ModernProfileScreen({super.key});
 
   @override
-  State<ProfileScreen> createState() => _ProfileScreenState();
+  State<ModernProfileScreen> createState() => _ModernProfileScreenState();
 }
 
-class _ProfileScreenState extends State<ProfileScreen> {
+class _ModernProfileScreenState extends State<ModernProfileScreen> {
   bool cloudSyncEnabled = true;
   bool pushNotificationsEnabled = true;
   bool biometricLockEnabled = false;
@@ -20,172 +20,175 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      body: SafeArea(
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              // Header
-              Padding(
-                padding: EdgeInsets.all(20.w),
-                child: Row(
-                  children: [
-                    Text(
-                      'Settings',
-                      style: TextStyle(
-                        fontSize: 24.sp,
-                        fontWeight: FontWeight.w600,
-                        color: Theme.of(context).colorScheme.onSurface,
-                      ),
-                    ),
-                  ],
+      appBar: AppBar(
+        title: Text(
+          'Settings',
+          style: TextStyle(
+            fontSize: 18.sp,
+            fontWeight: FontWeight.w600,
+            color: Theme.of(context).colorScheme.onSurface,
+          ),
+        ),
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+        elevation: 0,
+        leading: IconButton(
+          icon: Icon(
+            Icons.arrow_back_ios,
+            color: Theme.of(context).colorScheme.onSurface,
+          ),
+          onPressed: () => Navigator.pop(context),
+        ),
+      ),
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            SizedBox(height: 20.h),
+
+            // Profile Header
+            _buildProfileHeader(),
+
+            SizedBox(height: 32.h),
+
+            // General Section
+            _buildSection(
+              title: 'GENERAL',
+              children: [
+                _buildToggleItem(
+                  icon: Icons.cloud_sync,
+                  title: 'Cloud Sync',
+                  value: cloudSyncEnabled,
+                  onChanged: (value) {
+                    setState(() {
+                      cloudSyncEnabled = value;
+                    });
+                  },
                 ),
-              ),
-
-              // Profile Header
-              _buildProfileHeader(),
-
-              SizedBox(height: 32.h),
-
-              // General Section
-              _buildSection(
-                title: 'GENERAL',
-                children: [
-                  _buildToggleItem(
-                    icon: Icons.cloud_sync,
-                    title: 'Cloud Sync',
-                    value: cloudSyncEnabled,
-                    onChanged: (value) {
-                      setState(() {
-                        cloudSyncEnabled = value;
-                      });
-                    },
-                  ),
-                  _buildNavigationItem(
-                    icon: Icons.palette,
-                    title: 'Dark Mode',
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const ThemeSettingsPage(),
-                        ),
+                _buildNavigationItem(
+                  icon: Icons.palette,
+                  title: 'Dark Mode',
+                  subtitle: 'Theme',
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const ThemeSettingsPage(),
+                      ),
+                    );
+                  },
+                  trailing: BlocBuilder<ThemeCubit, ThemeData>(
+                    builder: (context, theme) {
+                      final isDark = theme.brightness == Brightness.dark;
+                      return Switch(
+                        value: isDark,
+                        onChanged: (value) {
+                          context.read<ThemeCubit>().toggleTheme();
+                        },
+                        activeColor: Theme.of(context).colorScheme.primary,
                       );
                     },
-                    trailing: BlocBuilder<ThemeCubit, ThemeData>(
-                      builder: (context, theme) {
-                        final isDark = theme.brightness == Brightness.dark;
-                        return Switch(
-                          value: isDark,
-                          onChanged: (value) {
-                            context.read<ThemeCubit>().toggleTheme();
-                          },
-                          activeColor: Theme.of(context).colorScheme.primary,
-                        );
-                      },
-                    ),
                   ),
-                  _buildNavigationItem(
-                    icon: Icons.language,
-                    title: 'Language',
-                    subtitle: 'English',
-                    onTap: () {
-                      // Handle language selection
-                    },
-                  ),
-                ],
-              ),
+                ),
+                _buildNavigationItem(
+                  icon: Icons.language,
+                  title: 'Language',
+                  subtitle: 'English',
+                  onTap: () {
+                    // Handle language selection
+                  },
+                ),
+              ],
+            ),
 
-              SizedBox(height: 24.h),
+            SizedBox(height: 24.h),
 
-              // Security Section
-              _buildSection(
-                title: 'SECURITY',
-                children: [
-                  _buildToggleItem(
-                    icon: Icons.fingerprint,
-                    title: 'Biometric Lock',
-                    value: biometricLockEnabled,
-                    onChanged: (value) {
-                      setState(() {
-                        biometricLockEnabled = value;
-                      });
-                    },
-                  ),
-                  _buildNavigationItem(
-                    icon: Icons.lock,
-                    title: 'Change Passcode',
-                    onTap: () {
-                      // Handle passcode change
-                    },
-                  ),
-                ],
-              ),
+            // Security Section
+            _buildSection(
+              title: 'SECURITY',
+              children: [
+                _buildToggleItem(
+                  icon: Icons.fingerprint,
+                  title: 'Biometric Lock',
+                  value: biometricLockEnabled,
+                  onChanged: (value) {
+                    setState(() {
+                      biometricLockEnabled = value;
+                    });
+                  },
+                ),
+                _buildNavigationItem(
+                  icon: Icons.lock,
+                  title: 'Change Passcode',
+                  onTap: () {
+                    // Handle passcode change
+                  },
+                ),
+              ],
+            ),
 
-              SizedBox(height: 24.h),
+            SizedBox(height: 24.h),
 
-              // Preferences Section
-              _buildSection(
-                title: 'PREFERENCES',
-                children: [
-                  _buildToggleItem(
-                    icon: Icons.notifications,
-                    title: 'Push Notifications',
-                    value: pushNotificationsEnabled,
-                    onChanged: (value) {
-                      setState(() {
-                        pushNotificationsEnabled = value;
-                      });
-                    },
-                  ),
-                  _buildNavigationItem(
-                    icon: Icons.text_fields,
-                    title: 'Font Size',
-                    subtitle: 'Default',
-                    onTap: () {
-                      // Handle font size selection
-                    },
-                  ),
-                ],
-              ),
+            // Preferences Section
+            _buildSection(
+              title: 'PREFERENCES',
+              children: [
+                _buildToggleItem(
+                  icon: Icons.notifications,
+                  title: 'Push Notifications',
+                  value: pushNotificationsEnabled,
+                  onChanged: (value) {
+                    setState(() {
+                      pushNotificationsEnabled = value;
+                    });
+                  },
+                ),
+                _buildNavigationItem(
+                  icon: Icons.text_fields,
+                  title: 'Font Size',
+                  subtitle: 'Default',
+                  onTap: () {
+                    // Handle font size selection
+                  },
+                ),
+              ],
+            ),
 
-              SizedBox(height: 24.h),
+            SizedBox(height: 24.h),
 
-              // Support Section
-              _buildSection(
-                title: 'SUPPORT',
-                children: [
-                  _buildNavigationItem(
-                    icon: Icons.help_center,
-                    title: 'Help Center',
-                    onTap: () {
-                      // Handle help center
-                    },
-                    showExternalLink: true,
-                  ),
-                  _buildNavigationItem(
-                    icon: Icons.info,
-                    title: 'App Version',
-                    subtitle: 'v2.4.0',
-                    onTap: null, // No action for version
-                  ),
-                  _buildNavigationItem(
-                    icon: Icons.privacy_tip,
-                    title: 'Privacy Policy',
-                    onTap: () {
-                      // Handle privacy policy
-                    },
-                  ),
-                ],
-              ),
+            // Support Section
+            _buildSection(
+              title: 'SUPPORT',
+              children: [
+                _buildNavigationItem(
+                  icon: Icons.help_center,
+                  title: 'Help Center',
+                  onTap: () {
+                    // Handle help center
+                  },
+                  showExternalLink: true,
+                ),
+                _buildNavigationItem(
+                  icon: Icons.info,
+                  title: 'App Version',
+                  subtitle: 'v2.4.0',
+                  onTap: null, // No action for version
+                ),
+                _buildNavigationItem(
+                  icon: Icons.privacy_tip,
+                  title: 'Privacy Policy',
+                  onTap: () {
+                    // Handle privacy policy
+                  },
+                ),
+              ],
+            ),
 
-              SizedBox(height: 32.h),
+            SizedBox(height: 32.h),
 
-              // Logout Button
-              _buildLogoutButton(),
+            // Logout Button
+            _buildLogoutButton(),
 
-              SizedBox(height: 32.h),
-            ],
-          ),
+            SizedBox(height: 32.h),
+          ],
         ),
       ),
     );

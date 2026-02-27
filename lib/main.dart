@@ -4,7 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:noteapp/constants/api_urls.dart';
-import 'package:noteapp/core/config/themes.dart';
+import 'package:noteapp/core/config/theme_cubit.dart';
 import 'package:noteapp/core/di/injector.dart';
 import 'package:noteapp/core/language/cubit/language_cubit.dart';
 import 'package:noteapp/core/language/l10n.dart';
@@ -43,6 +43,10 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
+        BlocProvider<ThemeCubit>(
+          create: (BuildContext context) => ThemeCubit(),
+        ),
+
         BlocProvider<LanguageCubit>(
           create: (BuildContext context) => LanguageCubit(),
         ),
@@ -74,30 +78,34 @@ class MyApp extends StatelessWidget {
         ),
       ],
       child: BlocBuilder<LanguageCubit, Locale>(
-        builder: (context, state) {
-          return ScreenUtilInit(
-            designSize: const Size(375, 812),
-            minTextAdapt: true,
-            splitScreenMode: true,
-            builder: (_, child) {
-              return MaterialApp(
-                debugShowCheckedModeBanner: false,
-                // builder: DevicePreview.appBuilder,
-                navigatorObservers: [ChuckerFlutter.navigatorObserver],
-                title: 'Vetyo',
-                localizationsDelegates: const [
-                  AppLocalizations.delegate,
-                  GlobalMaterialLocalizations.delegate,
-                  GlobalWidgetsLocalizations.delegate,
-                  GlobalCupertinoLocalizations.delegate,
-                ],
-                supportedLocales: L10n.all,
-                locale: state,
-                theme: AppThemes.lightTheme,
-                initialRoute: '/',
-                onGenerateRoute: RouteHandler.generateRoute,
-                navigatorKey: NavigationService.navigatorKey,
-                home: const SplashScreen(),
+        builder: (context, localeState) {
+          return BlocBuilder<ThemeCubit, ThemeData>(
+            builder: (context, themeState) {
+              return ScreenUtilInit(
+                designSize: const Size(375, 812),
+                minTextAdapt: true,
+                splitScreenMode: true,
+                builder: (_, child) {
+                  return MaterialApp(
+                    debugShowCheckedModeBanner: false,
+                    // builder: DevicePreview.appBuilder,
+                    navigatorObservers: [ChuckerFlutter.navigatorObserver],
+                    title: 'Vetyo',
+                    localizationsDelegates: const [
+                      AppLocalizations.delegate,
+                      GlobalMaterialLocalizations.delegate,
+                      GlobalWidgetsLocalizations.delegate,
+                      GlobalCupertinoLocalizations.delegate,
+                    ],
+                    supportedLocales: L10n.all,
+                    locale: localeState,
+                    theme: themeState,
+                    initialRoute: '/',
+                    onGenerateRoute: RouteHandler.generateRoute,
+                    navigatorKey: NavigationService.navigatorKey,
+                    home: const SplashScreen(),
+                  );
+                },
               );
             },
           );

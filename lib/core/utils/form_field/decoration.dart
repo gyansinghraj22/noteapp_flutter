@@ -14,7 +14,7 @@ class FormFieldDecoration {
     );
   }
 
-  static InputBorder getBorder() {
+  static InputBorder getBoarder() {
     return UnderlineInputBorder(
       borderSide: BorderSide.none,
       borderRadius: BorderRadius.circular(10),

@@ -72,7 +72,7 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Note created successfully')),
       );
-      Navigator.pop(context);
+      Navigator.pop(context, true); // Return true to indicate note was created
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Please fill in all required fields')),

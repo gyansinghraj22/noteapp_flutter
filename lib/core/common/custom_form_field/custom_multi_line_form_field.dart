@@ -81,7 +81,7 @@ class _CustomMultiLineFormFieldState extends State<CustomMultiLineFormField> {
             keyboardType: TextInputType.text,
             decoration: InputDecoration(
               focusedBorder: FormFieldDecoration.getFocusedBorder(context),
-              border: FormFieldDecoration.getBorder(),
+              border: FormFieldDecoration.getBoarder(),
               filled: true,
               // labelText:
               //     "${widget.config.label}${widget.config.isRequired ?? false ? " * " : ""}",

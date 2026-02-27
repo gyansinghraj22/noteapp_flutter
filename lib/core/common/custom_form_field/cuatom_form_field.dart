@@ -41,6 +41,9 @@ class _CustomFormFieldState extends State<CustomFormField> {
         return textFieldWidget();
       case FieldType.multiLine:
         return CustomMultiLineFormField(config: widget.config);
+
+      case FieldType.searchField:
+        return CustomMultiLineFormField(config: widget.config);
       case FieldType.password:
         return textFieldWidget();
       case FieldType.confirmPassword:
@@ -58,6 +61,7 @@ class _CustomFormFieldState extends State<CustomFormField> {
         }
       case FieldType.imageUpload:
         return CustomImagePickerFormField(config: widget.config);
+
       case FieldType.number:
         return textFieldWidget();
       default:
@@ -73,14 +77,15 @@ class _CustomFormFieldState extends State<CustomFormField> {
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Padding(
-          padding: const EdgeInsets.all(2.0),
-          child: Text(
-            widget.config.label,
-            style: context.textBlackStyle().bold.medium,
+        if (widget.config.showLabel)
+          Padding(
+            padding: const EdgeInsets.all(2.0),
+            child: Text(
+              widget.config.label,
+              style: context.textBlackStyle().bold.medium,
+            ),
           ),
-        ),
-        SizedBox(height: 8),
+        if (widget.config.showLabel) SizedBox(height: 8),
         TextFormField(
           style:
               context
@@ -133,6 +138,7 @@ class _CustomFormFieldState extends State<CustomFormField> {
                         widget.config.fieldType == FieldType.confirmPassword
                     ? IconButton(
                       icon: Icon(
+                        color: ColorPalete.brand,
                         isHidden ? Icons.visibility_off : Icons.visibility,
                       ),
                       onPressed: () {
@@ -143,7 +149,7 @@ class _CustomFormFieldState extends State<CustomFormField> {
                     )
                     : widget.config.suffixIcon,
             focusedBorder: FormFieldDecoration.getFocusedBorder(context),
-            border: FormFieldDecoration.getBorder(),
+            border: FormFieldDecoration.getBoarder(),
             fillColor: AppColor.greyColor.withAlpha(20),
             filled: true,
             focusColor: widget.config.style == null ? null : Colors.white,

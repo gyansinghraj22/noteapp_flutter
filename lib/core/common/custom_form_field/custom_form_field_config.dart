@@ -15,12 +15,13 @@ enum FieldType {
   switchs,
   amount,
   multiLine,
-  selectOptions,
+  searchField,
 }
 
 @immutable
 class CustomFormFieldConfig {
   final String label;
+  final bool showLabel;
   final bool? enabled;
   final String? hintText;
   final Widget? prefixIcon;
@@ -47,7 +48,6 @@ class CustomFormFieldConfig {
   final int? maxLines;
   final double? height;
   final double? width;
-  final IconData? itemIcon; // Icon for dropdown items
 
   const CustomFormFieldConfig({
     this.initialValue,
@@ -55,7 +55,6 @@ class CustomFormFieldConfig {
     this.onTap,
     this.height,
     this.width,
-    this.itemIcon,
     this.onFieldSubmitted,
     this.isObscure,
     this.onChanged,
@@ -72,6 +71,7 @@ class CustomFormFieldConfig {
     this.enableCaps = false,
     this.updateData,
     required this.label,
+    this.showLabel = true,
     this.enabled = true,
     this.hintText,
     this.prefixIcon,
@@ -82,10 +82,10 @@ class CustomFormFieldConfig {
 
   CustomFormFieldConfig copyWith({
     String? label,
+    bool? showLabel,
     int? maxLine,
     double? height,
     double? width,
-    IconData? itemIcon,
     bool? enabled,
     String? hintText,
     Widget? prefixIcon,
@@ -130,10 +130,10 @@ class CustomFormFieldConfig {
       enableCaps: enableCaps ?? this.enableCaps,
       updateData: updateData ?? this.updateData,
       label: label ?? this.label,
+      showLabel: showLabel ?? this.showLabel,
       maxLines: maxLine ?? maxLines,
       height: height ?? this.height,
       width: width ?? this.width,
-      itemIcon: itemIcon ?? this.itemIcon,
       enabled: enabled ?? this.enabled,
       hintText: hintText ?? this.hintText,
       prefixIcon: prefixIcon ?? this.prefixIcon,

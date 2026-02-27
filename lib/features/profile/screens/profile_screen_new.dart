@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:noteapp/core/common/base_page/base_page.dart';
 import 'package:noteapp/core/config/theme_cubit.dart';
 import 'package:noteapp/core/config/theme_settings_page.dart';
 
@@ -18,8 +19,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+    return BasePage(
+      showAppBar: true,
+      showBackButton: false,
+      
+      bodyColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
         child: SingleChildScrollView(
           child: Column(

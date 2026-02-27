@@ -75,8 +75,8 @@ class _CustomDropDownFormFieldState extends State<CustomDropDownFormField> {
           }),
           controller: widget.config.controller,
           decoration: InputDecoration(
-            focusedBorder: FormFieldDecoration.getFocusedBorder(context),
-            border: FormFieldDecoration.getBorder(),
+            // focusedBorder: FormFieldDecoration.getFocusedBorder(context),
+            border: FormFieldDecoration.getBoarder(),
             fillColor: Colors.grey.shade100,
             filled: true,
             labelText:
@@ -86,7 +86,7 @@ class _CustomDropDownFormFieldState extends State<CustomDropDownFormField> {
             ),
             suffixIcon:
                 widget.config.controller!.text.isEmpty
-                    ? const Icon(Icons.arrow_drop_down,color: Colors.grey)
+                    ? const Icon(Icons.arrow_drop_down)
                     : widget.config.enabled == true
                     ? GestureDetector(
                       onTap: () {
@@ -210,20 +210,6 @@ class _CustomDropDownFormFieldState extends State<CustomDropDownFormField> {
                                     return CustomCard(
                                       cardHeight: 50,
                                       child: CustomListTile(
-                                        leading:
-                                            (allOptions[index]["icon"] !=
-                                                        null ||
-                                                    widget.config.itemIcon !=
-                                                        null)
-                                                ? Icon(
-                                                  allOptions[index]["icon"] ??
-                                                      widget.config.itemIcon,
-                                                  color: context.applyAppColor(
-                                                    palette: ColorPalete.brand,
-                                                    swatch: 700,
-                                                  ),
-                                                )
-                                                : null,
                                         onPress: () {
                                           Navigator.pop(context);
                                           setState(() {

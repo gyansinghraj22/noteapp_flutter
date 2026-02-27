@@ -76,7 +76,7 @@ class _CustomDropDownFormFieldState extends State<CustomDropDownFormField> {
           controller: widget.config.controller,
           decoration: InputDecoration(
             focusedBorder: FormFieldDecoration.getFocusedBorder(context),
-            border: FormFieldDecoration.getBorder(),
+            border: FormFieldDecoration.getBoarder(),
             fillColor: Colors.grey.shade100,
             filled: true,
             labelText:

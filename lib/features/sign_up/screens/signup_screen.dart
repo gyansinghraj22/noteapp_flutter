@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:noteapp/constants/app_colors.dart';
+import 'package:noteapp/core/common/base_page/base_page.dart';
 import 'package:noteapp/core/common/custom_button/custom_button.dart';
 import 'package:noteapp/core/common/custom_form_field/custom_form_field_config.dart';
 import 'package:noteapp/core/common/custom_form_field/custom_form_field_generator.dart';
@@ -121,8 +122,10 @@ class _SignupScreenState extends State<SignupScreen> {
             showAppExistSnackBar(context);
           }
         },
-        child: Scaffold(
-          backgroundColor: AppColor.whiteColor,
+        child: BasePage(
+          showAppBar: false,
+          showBackButton: false,
+          bodyColor: Theme.of(context).scaffoldBackgroundColor,
           body: SafeArea(
             bottom: false,
             child: Padding(
@@ -140,7 +143,6 @@ class _SignupScreenState extends State<SignupScreen> {
       width: double.infinity,
       height: MediaQuery.of(context).size.height,
       decoration: const BoxDecoration(
-        color: Colors.white,
         borderRadius: BorderRadius.only(
           topLeft: Radius.circular(40),
           topRight: Radius.circular(40),

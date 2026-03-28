@@ -5,6 +5,7 @@ import 'package:noteapp/features/note/screens/add_note.dart';
 import 'package:noteapp/features/note/screens/list_note.dart';
 import 'package:noteapp/core/config/theme_toggle_widgets.dart';
 import 'package:noteapp/features/profile/screens/profile_screen.dart';
+import 'package:noteapp/features/attachments_gallery/screens/attachment_gallery_screen.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -15,13 +16,11 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   int _currentIndex = 0;
-  final GlobalKey<ListNoteScreenState> _listNoteKey =
-      GlobalKey<ListNoteScreenState>();
 
-  late final List<Widget> _pages = [
-    ListNoteScreen(key: _listNoteKey),
-    const _InsightsScreen(),
-    const _SearchScreen(),
+  final List<Widget> _screens = [
+    const ListNoteScreen(),
+    const AttachmentGalleryScreen(),
+    const Center(child: Text("Insights")),
     const ProfileScreen(),
   ];
 
@@ -29,11 +28,11 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return BasePage(
       showAppBar: false,
-      body: IndexedStack(index: _currentIndex, children: _pages),
+      body: IndexedStack(index: _currentIndex, children: _screens),
       bodyColor: Theme.of(context).scaffoldBackgroundColor,
       bottomNavigationBar: _buildBottomNavigationBar(),
-      floatingActionButton: _buildFloatingActionButton(),
-      fabLocation: FloatingActionButtonLocation.centerDocked,
+      // floatingActionButton: _buildFloatingActionButton(),
+      // fabLocation: FloatingActionButtonLocation.centerDocked,
     );
   }
 
@@ -51,7 +50,7 @@ class _HomePageState extends State<HomePage> {
           );
 
           // Refresh notes list if a note was added
-          if (result == true && _listNoteKey.currentState != null) {
+          if (result == true ) {
             // Refresh the notes list by calling setState
             setState(() {});
           }
@@ -80,63 +79,42 @@ class _HomePageState extends State<HomePage> {
           ),
         ],
       ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: [
-          _buildNavItem(Icons.note_outlined, Icons.note, "Notes", 0),
-          _buildNavItem(Icons.insights_outlined, Icons.insights, "Insights", 1),
-          // Empty space for FAB
-          SizedBox(width: 56.w),
-          _buildNavItem(Icons.search_outlined, Icons.search, "Search", 2),
-          _buildNavItem(Icons.person_outline, Icons.person, "Profile", 3),
+      child: BottomNavigationBar(
+        currentIndex: _currentIndex,
+        onTap: (index) {
+          setState(() {
+            _currentIndex = index;
+          });
+        },
+        type: BottomNavigationBarType.fixed,
+        backgroundColor: Theme.of(context).colorScheme.surface,
+        selectedItemColor: Theme.of(context).colorScheme.primary,
+        unselectedItemColor: Theme.of(
+          context,
+        ).colorScheme.onSurface.withOpacity(0.6),
+        elevation: 0,
+        items: const [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.description_outlined),
+            activeIcon: Icon(Icons.description),
+            label: 'Notes',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.attach_file_outlined),
+            activeIcon: Icon(Icons.attach_file),
+            label: 'Attachments',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.folder_open_sharp),
+            activeIcon: Icon(Icons.folder_open_sharp),
+            label: 'Insights',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.person_outline),
+            activeIcon: Icon(Icons.person),
+            label: 'Profile',
+          ),
         ],
-      ),
-    );
-  }
-
-  Widget _buildNavItem(
-    IconData icon,
-    IconData activeIcon,
-    String label,
-    int index,
-  ) {
-    final isActive = _currentIndex == index;
-    return GestureDetector(
-      onTap: () {
-        FocusScope.of(context).unfocus();
-        setState(() => _currentIndex = index);
-      },
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 8),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(
-              isActive ? activeIcon : icon,
-              size: 24.sp,
-              color:
-                  isActive
-                      ? Theme.of(context).colorScheme.primary
-                      : Theme.of(
-                        context,
-                      ).colorScheme.onSurface.withOpacity(0.6),
-            ),
-            SizedBox(height: 4.h),
-            Text(
-              label,
-              style: TextStyle(
-                fontSize: 10.sp,
-                fontWeight: FontWeight.w500,
-                color:
-                    isActive
-                        ? Theme.of(context).colorScheme.primary
-                        : Theme.of(
-                          context,
-                        ).colorScheme.onSurface.withOpacity(0.6),
-              ),
-            ),
-          ],
-        ),
       ),
     );
   }

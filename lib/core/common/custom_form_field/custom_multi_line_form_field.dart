@@ -90,7 +90,7 @@ class _CustomMultiLineFormFieldState extends State<CustomMultiLineFormField> {
                       .textStyle(palette: ColorPalete.brand, swatch: 700)
                       .medium
                       .semiBold,
-              hintText: widget.config.hintText ?? '',
+              // hintText: widget.config.hintText ?? '',
               hintStyle: TextStyle(color: Colors.grey[400]),
               contentPadding: const EdgeInsets.all(16),
               focusColor: AppColor.whiteColor,

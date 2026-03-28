@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:noteapp/constants/app_colors.dart';
+import 'package:noteapp/core/common/base_page/base_page.dart';
 import 'package:noteapp/core/common/custom_form_field/custom_form_field_config.dart';
 import 'package:noteapp/core/common/custom_form_field/custom_form_field_generator.dart';
 
@@ -89,14 +90,22 @@ class ListNoteScreenState extends State<ListNoteScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(top: 24),
-      child: CustomScrollView(
-        physics: const BouncingScrollPhysics(),
-        slivers: [
-          _buildSearchSection(),
-          _horizontalFilterSection(),
-          _buildNotesList(),
+    return BasePage(
+      showAppBar: false,
+      bodyColor: Theme.of(context).scaffoldBackgroundColor,
+      body: Column(
+        children: [
+          // Main Content
+          Expanded(
+            child: CustomScrollView(
+              physics: const BouncingScrollPhysics(),
+              slivers: [
+                _buildSearchSection(),
+                _horizontalFilterSection(),
+                _buildNotesList(),
+              ],
+            ),
+          ),
         ],
       ),
     );
@@ -126,10 +135,13 @@ class ListNoteScreenState extends State<ListNoteScreen> {
   SliverToBoxAdapter _horizontalFilterSection() {
     return SliverToBoxAdapter(
       child: SizedBox(
-        height: 30.h,
+        height: 48.h,
         child: ListView.builder(
           scrollDirection: Axis.horizontal,
-          padding: EdgeInsets.symmetric(horizontal: _horizontalPadding.w),
+          padding: EdgeInsets.symmetric(
+            horizontal: _horizontalPadding.w,
+            vertical: _horizontalPadding.h / 2,
+          ),
           itemCount: categories.length,
           itemBuilder: (context, index) {
             final category = categories[index];

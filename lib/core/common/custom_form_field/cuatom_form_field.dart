@@ -79,7 +79,7 @@ class _CustomFormFieldState extends State<CustomFormField> {
       children: [
         if (widget.config.showLabel)
           Padding(
-            padding: const EdgeInsets.all(2.0),
+            padding: const EdgeInsets.symmetric(vertical: 2.0),
             child: Text(
               widget.config.label,
               style: context.textBlackStyle().bold.medium,

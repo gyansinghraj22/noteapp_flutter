@@ -68,7 +68,6 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
 
   void _createNote() {
     if (_formKey.currentState?.validate() ?? false) {
-      // TODO: Implement create note functionality
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Note created successfully')),
       );

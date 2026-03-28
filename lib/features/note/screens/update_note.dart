@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:noteapp/constants/app_colors.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:noteapp/core/common/base_page/base_page.dart';
 import 'package:noteapp/core/common/custom_form_field/custom_form_field_config.dart';
 import 'package:noteapp/core/common/custom_form_field/custom_form_field_generator.dart';
-import 'package:noteapp/core/extention/color_extention.dart';
-import 'package:noteapp/core/typography/font_style_extentions.dart';
 
 class UpdateNoteScreen extends StatefulWidget {
   final Map<String, dynamic>? noteData;
@@ -18,6 +17,9 @@ class _UpdateNoteScreenState extends State<UpdateNoteScreen> {
   final _formKey = GlobalKey<FormState>();
   Map<String, dynamic> formData = {};
   List<CustomFormFieldConfig> formFields = [];
+
+  String selectedCategory = "Work";
+
   List<Map<String, dynamic>> attachments = [
     {
       'name': 'Contract_Draft.pdf',
@@ -39,6 +41,7 @@ class _UpdateNoteScreenState extends State<UpdateNoteScreen> {
         fieldType: FieldType.text,
         id: "title",
         label: "Note Title",
+        showLabel: false,
         controller: TextEditingController(
           text: widget.noteData?["title"] ?? "Q4 Project Requirements",
         ),
@@ -48,6 +51,7 @@ class _UpdateNoteScreenState extends State<UpdateNoteScreen> {
         fieldType: FieldType.multiLine,
         id: "content",
         label: "Note Content",
+        showLabel: false,
         maxLines: 15,
         controller: TextEditingController(
           text:
@@ -55,161 +59,317 @@ class _UpdateNoteScreenState extends State<UpdateNoteScreen> {
               "The primary objective for the Q4 sprint is to finalize the core architecture for the cross-platform synchronization engine.\n\nKey deliverables include:\n• End-to-end encryption for all user notes\n• Offline-first support for mobile clients\n• Real-time collaborative editing using CRDTs\n\nWe need to review the attached contract for the cloud storage provider and ensure it meets our data residency requirements",
         ),
       ),
-      CustomFormFieldConfig(
-        id: "tags",
-        label: "Category",
-        fieldType: FieldType.dropDown,
-        controller: TextEditingController(
-          text: widget.noteData?["category"] ?? "Work",
-        ),
-        options: [
-          {"label": "Work", "value": "Work", "icon": Icons.work},
-          {"label": "Personal", "value": "Personal", "icon": Icons.person},
-          {"label": "Ideas", "value": "Ideas", "icon": Icons.lightbulb},
-          {"label": "To-Do", "value": "To-Do", "icon": Icons.check_box},
-          {"label": "Other", "value": "Other", "icon": Icons.label},
-        ],
-        isRequired: false,
-      ),
     ];
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color(0xFF1A1A1A),
-      appBar: AppBar(
-        backgroundColor: const Color(0xFF1A1A1A),
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.white),
-          onPressed: () => Navigator.pop(context),
+    return BasePage(
+      showAppBar: false,
+      bodyColor: Theme.of(context).scaffoldBackgroundColor,
+      body: Column(
+        children: [
+          // Custom App Bar
+          _buildCustomAppBar(context),
+
+          // Main Content
+          Expanded(
+            child: CustomScrollView(
+              physics: const BouncingScrollPhysics(),
+              slivers: [
+                // Last Modified Info
+                SliverToBoxAdapter(
+                  child: Container(
+                    width: double.infinity,
+                    padding: EdgeInsets.symmetric(vertical: 12.h),
+                    child: Text(
+                      "Modified on 2 | 10:45 AM",
+                      style: TextStyle(
+                        fontSize: 12.sp,
+                        fontWeight: FontWeight.w400,
+                        color: Theme.of(
+                          context,
+                        ).colorScheme.onBackground.withOpacity(0.5),
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                ),
+
+                // Form Content
+                SliverPadding(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: 16.w,
+                    vertical: 16.h,
+                  ),
+                  sliver: SliverToBoxAdapter(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Form Fields (Title & Content)
+                        CustomFormFieldGenerator(
+                          onFieldSubmitted: (data) {
+                            formData = data;
+                            setState(() {});
+                          },
+                          formKey: _formKey,
+                          formFields: formFields,
+                        ),
+
+                        SizedBox(height: 24.h),
+
+                        // Category Section
+                        Text(
+                          "Category",
+                          style: TextStyle(
+                            fontSize: 14.sp,
+                            fontWeight: FontWeight.w600,
+                            color: Theme.of(context).colorScheme.onBackground,
+                          ),
+                        ),
+                        SizedBox(height: 12.h),
+                        _buildCategoryChips(context),
+
+                        SizedBox(height: 32.h),
+
+                        // Attachments Section
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              "Attachments",
+                              style: TextStyle(
+                                fontSize: 14.sp,
+                                fontWeight: FontWeight.w600,
+                                color:
+                                    Theme.of(context).colorScheme.onBackground,
+                              ),
+                            ),
+                            TextButton(
+                              onPressed: _showAttachmentOptions,
+                              style: TextButton.styleFrom(
+                                padding: EdgeInsets.zero,
+                                minimumSize: Size.zero,
+                                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                              ),
+                              child: Text(
+                                "Add New",
+                                style: TextStyle(
+                                  fontSize: 13.sp,
+                                  fontWeight: FontWeight.w600,
+                                  color: Theme.of(context).colorScheme.primary,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+
+                        SizedBox(height: 12.h),
+
+                        // Attachments List
+                        ...attachments.map(
+                          (attachment) => Padding(
+                            padding: EdgeInsets.only(bottom: 8.h),
+                            child: _buildAttachmentItem(attachment),
+                          ),
+                        ),
+
+                        SizedBox(height: 16.h),
+
+                        // Add Attachment Buttons
+                        Row(
+                          children: [
+                            Expanded(
+                              child: _buildDottedButton(
+                                label: "Add Image",
+                                icon: Icons.add_a_photo,
+                                onPressed: _addImage,
+                                context: context,
+                              ),
+                            ),
+                            SizedBox(width: 12.w),
+                            Expanded(
+                              child: _buildDottedButton(
+                                label: "Add File",
+                                icon: Icons.attach_file,
+                                onPressed: _addFile,
+                                context: context,
+                              ),
+                            ),
+                          ],
+                        ),
+
+                        SizedBox(height: 24.h),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+
+          // Bottom Toolbar
+          _buildBottomToolbar(context),
+        ],
+      ),
+    );
+  }
+
+  // 🎨 CUSTOM APP BAR
+  Widget _buildCustomAppBar(BuildContext context) {
+    return Container(
+      padding: EdgeInsets.only(
+        left: 16.w,
+        right: 16.w,
+        top: 12.h,
+        bottom: 12.h,
+      ),
+      decoration: BoxDecoration(
+        color: Theme.of(context).scaffoldBackgroundColor,
+        border: Border(
+          bottom: BorderSide(
+            color: Theme.of(context).colorScheme.outline.withOpacity(0.1),
+          ),
         ),
-        title: Text(
-          "Edit Note Detail",
-          style: context.textStyle(palette: ColorPalete.white).large.bold,
-        ),
-        centerTitle: true,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.pin_drop, color: Colors.white),
-            onPressed: () {},
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          // Back Button
+          GestureDetector(
+            onTap: () => Navigator.pop(context),
+            child: Container(
+              width: 36.w,
+              height: 36.w,
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.surface,
+                borderRadius: BorderRadius.circular(8.r),
+              ),
+              child: Icon(
+                Icons.arrow_back,
+                color: Theme.of(context).colorScheme.onSurface,
+                size: 20.sp,
+              ),
+            ),
           ),
-          IconButton(
-            icon: const Icon(Icons.bookmark_border, color: Colors.white),
-            onPressed: () {},
+
+          // Title
+          Text(
+            "Edit Note Detail",
+            style: TextStyle(
+              fontSize: 16.sp,
+              fontWeight: FontWeight.w700,
+              color: Theme.of(context).colorScheme.onBackground,
+            ),
           ),
-          IconButton(
-            icon: const Icon(Icons.share, color: Colors.white),
-            onPressed: () {},
-          ),
-          IconButton(
-            icon: const Icon(Icons.history, color: Colors.white),
-            onPressed: () {},
+
+          // Action Buttons
+          Row(
+            children: [
+              _buildActionButton(context, Icons.pin_drop, () {}),
+              SizedBox(width: 8.w),
+              _buildActionButton(context, Icons.bookmark_border, () {}),
+              SizedBox(width: 8.w),
+              _buildActionButton(context, Icons.share, () {}),
+              SizedBox(width: 8.w),
+              _buildActionButton(context, Icons.history, () {}),
+            ],
           ),
         ],
       ),
-      body: SafeArea(
-        child: Column(
-          children: [
-            // Last Modified Info
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(16),
-              child: Text(
-                "Modified on 2 | 10:45 AM",
-                style:
-                    context
-                        .textStyle(palette: ColorPalete.slate, swatch: 400)
-                        .small,
-                textAlign: TextAlign.center,
-              ),
-            ),
+    );
+  }
 
-            // Scrollable Content
-            Expanded(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+  Widget _buildActionButton(
+    BuildContext context,
+    IconData icon,
+    VoidCallback onPressed,
+  ) {
+    return GestureDetector(
+      onTap: onPressed,
+      child: Container(
+        width: 36.w,
+        height: 36.w,
+        decoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.surface,
+          borderRadius: BorderRadius.circular(8.r),
+        ),
+        child: Icon(
+          icon,
+          color: Theme.of(context).colorScheme.onSurface,
+          size: 18.sp,
+        ),
+      ),
+    );
+  }
+
+  // 🏷️ CATEGORY CHIPS
+  Widget _buildCategoryChips(BuildContext context) {
+    final categories = [
+      {"label": "Work", "icon": Icons.work},
+      {"label": "Personal", "icon": Icons.person},
+      {"label": "Ideas", "icon": Icons.lightbulb},
+      {"label": "To-Do", "icon": Icons.check_box},
+      {"label": "Other", "icon": Icons.label},
+    ];
+
+    return Wrap(
+      spacing: 8.w,
+      runSpacing: 8.h,
+      children:
+          categories.map((category) {
+            final isSelected = category["label"] == selectedCategory;
+            return GestureDetector(
+              onTap: () {
+                setState(() {
+                  selectedCategory = category["label"] as String;
+                });
+              },
+              child: Container(
+                padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
+                decoration: BoxDecoration(
+                  color:
+                      isSelected
+                          ? Theme.of(context).colorScheme.primary
+                          : Theme.of(context).colorScheme.surface,
+                  borderRadius: BorderRadius.circular(20.r),
+                  border: Border.all(
+                    color:
+                        isSelected
+                            ? Colors.transparent
+                            : Theme.of(
+                              context,
+                            ).colorScheme.outline.withOpacity(0.2),
+                  ),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
                   children: [
-                    // Form Fields
-                    CustomFormFieldGenerator(
-                      onFieldSubmitted: (data) {
-                        formData = data;
-                        setState(() {});
-                      },
-                      formKey: _formKey,
-                      formFields: formFields,
+                    Icon(
+                      category["icon"] as IconData,
+                      size: 16.sp,
+                      color:
+                          isSelected
+                              ? Theme.of(context).colorScheme.onPrimary
+                              : Theme.of(context).colorScheme.onSurface,
                     ),
-
-                    const SizedBox(height: 24),
-
-                    // Attachments Section
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          "Attachments",
-                          style:
-                              context
-                                  .textStyle(palette: ColorPalete.white)
-                                  .medium
-                                  .bold,
-                        ),
-                        TextButton(
-                          onPressed: _showAttachmentOptions,
-                          child: Text(
-                            "Add New",
-                            style:
-                                context
-                                    .textStyle(palette: ColorPalete.brand)
-                                    .medium
-                                    .semiBold,
-                          ),
-                        ),
-                      ],
-                    ),
-
-                    const SizedBox(height: 12),
-
-                    // Attachments List
-                    ...attachments.map(
-                      (attachment) => _buildAttachmentItem(attachment),
-                    ),
-
-                    const SizedBox(height: 24),
-
-                    // Add Attachment Buttons
-                    Row(
-                      children: [
-                        Expanded(
-                          child: _buildDottedButton(
-                            label: "Add Image",
-                            icon: Icons.add_a_photo,
-                            onPressed: _addImage,
-                          ),
-                        ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: _buildDottedButton(
-                            label: "Add File",
-                            icon: Icons.attach_file,
-                            onPressed: _addFile,
-                          ),
-                        ),
-                      ],
+                    SizedBox(width: 6.w),
+                    Text(
+                      category["label"] as String,
+                      style: TextStyle(
+                        fontSize: 12.sp,
+                        fontWeight: FontWeight.w600,
+                        color:
+                            isSelected
+                                ? Theme.of(context).colorScheme.onPrimary
+                                : Theme.of(context).colorScheme.onSurface,
+                      ),
                     ),
                   ],
                 ),
               ),
-            ),
-
-            // Bottom Toolbar
-            _buildBottomToolbar(),
-          ],
-        ),
-      ),
+            );
+          }).toList(),
     );
   }
 
@@ -217,135 +377,38 @@ class _UpdateNoteScreenState extends State<UpdateNoteScreen> {
     required String label,
     required IconData icon,
     required VoidCallback onPressed,
+    required BuildContext context,
   }) {
-    return Container(
-      height: 50,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: AppColor.brightSkyMain,
-          width: 2,
-          style: BorderStyle.solid,
+    return GestureDetector(
+      onTap: onPressed,
+      child: Container(
+        height: 48.h,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(12.r),
+          border: Border.all(
+            color: Theme.of(context).colorScheme.primary,
+            width: 1.5,
+            style: BorderStyle.solid,
+          ),
+          color: Theme.of(context).colorScheme.primary.withOpacity(0.08),
         ),
-      ),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: onPressed,
-          borderRadius: BorderRadius.circular(12),
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(icon, size: 20, color: AppColor.brightSkyMain),
-                const SizedBox(width: 8),
-                Text(
-                  label,
-                  style:
-                      context
-                          .textStyle(palette: ColorPalete.brand, swatch: 700)
-                          .medium
-                          .semiBold,
-                  textAlign: TextAlign.center,
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildAttachmentItem(Map<String, dynamic> attachment) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: Colors.grey.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.grey.withOpacity(0.2)),
-      ),
-      child: Row(
-        children: [
-          Container(
-            width: 40,
-            height: 40,
-            decoration: BoxDecoration(
-              color: attachment['color'].withOpacity(0.1),
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: Icon(
-              attachment['icon'],
-              color: attachment['color'],
-              size: 20,
-            ),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  attachment['name'],
-                  style:
-                      context
-                          .textStyle(palette: ColorPalete.white)
-                          .medium
-                          .semiBold,
-                ),
-                Text(
-                  attachment['type'].toUpperCase(),
-                  style:
-                      context
-                          .textStyle(palette: ColorPalete.slate, swatch: 400)
-                          .small,
-                ),
-              ],
-            ),
-          ),
-          IconButton(
-            icon: const Icon(Icons.close, color: Colors.grey, size: 18),
-            onPressed: () {
-              setState(() {
-                attachments.remove(attachment);
-              });
-            },
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildBottomToolbar() {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: const Color(0xFF2A2A2A),
-        border: Border(top: BorderSide(color: Colors.grey.withOpacity(0.2))),
-      ),
-      child: Expanded(
         child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            _buildToolbarButton(Icons.format_bold, false),
-            _buildToolbarButton(Icons.format_italic, false),
-            _buildToolbarButton(Icons.format_underlined, false),
-            _buildToolbarButton(Icons.format_list_bulleted, false),
-            _buildToolbarButton(Icons.format_list_numbered, false),
-            const Spacer(),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-              decoration: BoxDecoration(
-                color: AppColor.brightSkyMain.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(16),
+            Icon(
+              icon,
+              size: 18.sp,
+              color: Theme.of(context).colorScheme.primary,
+            ),
+            SizedBox(width: 6.w),
+            Text(
+              label,
+              style: TextStyle(
+                fontSize: 13.sp,
+                fontWeight: FontWeight.w600,
+                color: Theme.of(context).colorScheme.primary,
               ),
-              child: Text(
-                "Auto-saved 2 minutes ago",
-                style:
-                    context
-                        .textStyle(palette: ColorPalete.slate, swatch: 400)
-                        .small,
-              ),
+              textAlign: TextAlign.center,
             ),
           ],
         ),
@@ -353,22 +416,148 @@ class _UpdateNoteScreenState extends State<UpdateNoteScreen> {
     );
   }
 
-  Widget _buildToolbarButton(IconData icon, bool isActive) {
+  Widget _buildAttachmentItem(Map<String, dynamic> attachment) {
     return Container(
-      margin: const EdgeInsets.only(right: 8),
-      child: InkWell(
-        onTap: () {},
-        borderRadius: BorderRadius.circular(6),
+      padding: EdgeInsets.all(12.w),
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surface,
+        borderRadius: BorderRadius.circular(12.r),
+        border: Border.all(
+          color: Theme.of(context).colorScheme.outline.withOpacity(0.1),
+        ),
+      ),
+      child: Row(
+        children: [
+          // Icon Container
+          Container(
+            width: 40.w,
+            height: 40.w,
+            decoration: BoxDecoration(
+              color: attachment['color'].withOpacity(0.1),
+              borderRadius: BorderRadius.circular(8.r),
+            ),
+            child: Icon(
+              attachment['icon'],
+              color: attachment['color'],
+              size: 20.sp,
+            ),
+          ),
+          SizedBox(width: 12.w),
+
+          // File Info
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  attachment['name'],
+                  style: TextStyle(
+                    fontSize: 13.sp,
+                    fontWeight: FontWeight.w600,
+                    color: Theme.of(context).colorScheme.onSurface,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                SizedBox(height: 4.h),
+                Text(
+                  attachment['type'].toUpperCase(),
+                  style: TextStyle(
+                    fontSize: 11.sp,
+                    fontWeight: FontWeight.w400,
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.onSurface.withOpacity(0.5),
+                  ),
+                ),
+              ],
+            ),
+          ),
+
+          // Delete Button
+          GestureDetector(
+            onTap: () {
+              setState(() {
+                attachments.remove(attachment);
+              });
+            },
+            child: Icon(
+              Icons.close,
+              color: Theme.of(context).colorScheme.onSurface.withOpacity(0.4),
+              size: 18.sp,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildBottomToolbar(BuildContext context) {
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 12.h),
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surface,
+        border: Border(
+          top: BorderSide(
+            color: Theme.of(context).colorScheme.outline.withOpacity(0.1),
+          ),
+        ),
+      ),
+      child: Row(
+        children: [
+          _buildToolbarButton(context, Icons.format_bold, false),
+          _buildToolbarButton(context, Icons.format_italic, false),
+          _buildToolbarButton(context, Icons.format_underlined, false),
+          _buildToolbarButton(context, Icons.format_list_bulleted, false),
+          _buildToolbarButton(context, Icons.format_list_numbered, false),
+          const Spacer(),
+          Container(
+            padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
+            decoration: BoxDecoration(
+              color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(16.r),
+            ),
+            child: Text(
+              "Auto-saved 2 minutes ago",
+              style: TextStyle(
+                fontSize: 11.sp,
+                fontWeight: FontWeight.w400,
+                color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildToolbarButton(
+    BuildContext context,
+    IconData icon,
+    bool isActive,
+  ) {
+    return Container(
+      margin: EdgeInsets.only(right: 8.w),
+      child: GestureDetector(
+        onTap: () {
+          // TODO: Implement toolbar functionality
+        },
         child: Container(
-          padding: const EdgeInsets.all(8),
+          padding: EdgeInsets.all(8.w),
           decoration: BoxDecoration(
-            color: isActive ? AppColor.brightSkyMain : Colors.transparent,
-            borderRadius: BorderRadius.circular(6),
+            color:
+                isActive
+                    ? Theme.of(context).colorScheme.primary
+                    : Colors.transparent,
+            borderRadius: BorderRadius.circular(6.r),
           ),
           child: Icon(
             icon,
-            size: 20,
-            color: isActive ? Colors.white : Colors.grey,
+            size: 18.sp,
+            color:
+                isActive
+                    ? Theme.of(context).colorScheme.onPrimary
+                    : Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
           ),
         ),
       ),
@@ -378,27 +567,37 @@ class _UpdateNoteScreenState extends State<UpdateNoteScreen> {
   void _showAttachmentOptions() {
     showModalBottomSheet(
       context: context,
-      backgroundColor: const Color(0xFF2A2A2A),
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      backgroundColor: Theme.of(context).colorScheme.surface,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16.r)),
       ),
       builder:
           (context) => Container(
-            padding: const EdgeInsets.all(24),
+            padding: EdgeInsets.all(24.w),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
                   "Add Attachment",
-                  style:
-                      context.textStyle(palette: ColorPalete.white).large.bold,
+                  style: TextStyle(
+                    fontSize: 16.sp,
+                    fontWeight: FontWeight.w700,
+                    color: Theme.of(context).colorScheme.onBackground,
+                  ),
                 ),
-                const SizedBox(height: 24),
+                SizedBox(height: 24.h),
                 ListTile(
-                  leading: const Icon(Icons.camera_alt, color: Colors.blue),
-                  title: const Text(
+                  leading: Icon(
+                    Icons.camera_alt,
+                    color: Colors.blue,
+                    size: 24.sp,
+                  ),
+                  title: Text(
                     "Take Photo",
-                    style: TextStyle(color: Colors.white),
+                    style: TextStyle(
+                      fontSize: 14.sp,
+                      color: Theme.of(context).colorScheme.onSurface,
+                    ),
                   ),
                   onTap: () {
                     Navigator.pop(context);
@@ -406,10 +605,17 @@ class _UpdateNoteScreenState extends State<UpdateNoteScreen> {
                   },
                 ),
                 ListTile(
-                  leading: const Icon(Icons.photo_library, color: Colors.green),
-                  title: const Text(
+                  leading: Icon(
+                    Icons.photo_library,
+                    color: Colors.green,
+                    size: 24.sp,
+                  ),
+                  title: Text(
                     "Photo Library",
-                    style: TextStyle(color: Colors.white),
+                    style: TextStyle(
+                      fontSize: 14.sp,
+                      color: Theme.of(context).colorScheme.onSurface,
+                    ),
                   ),
                   onTap: () {
                     Navigator.pop(context);
@@ -417,10 +623,17 @@ class _UpdateNoteScreenState extends State<UpdateNoteScreen> {
                   },
                 ),
                 ListTile(
-                  leading: const Icon(Icons.attach_file, color: Colors.orange),
-                  title: const Text(
+                  leading: Icon(
+                    Icons.attach_file,
+                    color: Colors.orange,
+                    size: 24.sp,
+                  ),
+                  title: Text(
                     "File",
-                    style: TextStyle(color: Colors.white),
+                    style: TextStyle(
+                      fontSize: 14.sp,
+                      color: Theme.of(context).colorScheme.onSurface,
+                    ),
                   ),
                   onTap: () {
                     Navigator.pop(context);
@@ -434,14 +647,12 @@ class _UpdateNoteScreenState extends State<UpdateNoteScreen> {
   }
 
   void _addImage() {
-    // TODO: Implement image picker
     ScaffoldMessenger.of(
       context,
     ).showSnackBar(const SnackBar(content: Text('Image picker functionality')));
   }
 
   void _addFile() {
-    // TODO: Implement file picker
     ScaffoldMessenger.of(
       context,
     ).showSnackBar(const SnackBar(content: Text('File picker functionality')));

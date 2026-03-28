@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:iconoir_flutter/iconoir_flutter.dart' as Iconoir;
 import 'package:noteapp/constants/app_colors.dart';
+import 'package:noteapp/core/common/base_page/base_page.dart';
 import 'package:noteapp/core/common/custom_button/custom_button.dart';
 import 'package:noteapp/core/common/custom_form_field/custom_otp_input_form_field.dart';
 import 'package:noteapp/core/common/loading_overlay/loading_overlay.dart';
@@ -14,7 +15,6 @@ import 'package:noteapp/features/otp_verification/bloc/otp_verification_bloc.dar
 import 'package:noteapp/features/otp_verification/cubit/resend_timer_cubit.dart';
 import 'package:noteapp/core/routes/route_paths.dart';
 import 'package:noteapp/core/typography/font_style_extentions.dart';
-
 
 class OTPVerificationScreen extends StatefulWidget {
   final String email;
@@ -85,8 +85,9 @@ class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
           ).showErrorStateDialog(body: state.errorModel.message.toString());
         }
       },
-      child: Scaffold(
-        backgroundColor: AppColor.whiteColor,
+      child: BasePage(
+        showAppBar: false,
+        bodyColor: AppColor.whiteColor,
         body: Padding(
           padding: const EdgeInsets.only(left: 16, right: 16),
           child: SafeArea(

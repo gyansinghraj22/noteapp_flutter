@@ -5,7 +5,6 @@ import 'package:noteapp/features/home/home_page.dart';
 import 'package:noteapp/features/login/screens/login_screen.dart';
 import 'package:noteapp/features/otp_verification/screens/otp_verification.dart';
 import 'package:noteapp/features/otp_verification/screens/otp_verify_success_screen.dart';
-import 'package:noteapp/features/profile/screens/enter_profile_info.dart';
 import 'package:noteapp/features/reset_password/screens/reset_password_email_screen.dart';
 import 'package:noteapp/features/reset_password/screens/reset_password_otp_screen.dart';
 import 'package:noteapp/features/reset_password/screens/reset_password_screen.dart';
@@ -13,7 +12,6 @@ import 'package:noteapp/features/reset_password/screens/reset_password_success_s
 import 'package:noteapp/features/sign_up/screens/signup_screen.dart';
 import 'package:noteapp/features/sign_up/screens/user_information_input_screen.dart';
 import 'package:noteapp/core/routes/route_paths.dart';
-
 
 class RouteHandler {
   static Route<dynamic> generateRoute(RouteSettings settings) {
@@ -63,11 +61,6 @@ class RouteHandler {
         return MaterialPageRoute(
           builder: (_) => OTPVerificationScreen(email: args['email']),
         );
-      case RoutePaths.enterProfileInfoScreen:
-        args as Map;
-        return MaterialPageRoute(
-          builder: (_) => EnterProfileInfoScreen(userInfo: args['userInfo']),
-        );
       case RoutePaths.userInformationInputScreen:
         return MaterialPageRoute(
           builder: (_) => const UserInformationInputScreen(),
@@ -85,10 +78,6 @@ class RouteHandler {
                 email: args['email'] ?? '',
               ),
         );
-      // case RoutePaths.onboardingScreen:
-      //   return MaterialPageRoute(builder: (_) => const OnboardingScreen());
-      // case RoutePaths.initialScreen:
-      //   return MaterialPageRoute(builder: (_) => const InitialScreen());
       case RoutePaths.signupScreen:
         return MaterialPageRoute(builder: (_) => const SignupScreen());
       default:

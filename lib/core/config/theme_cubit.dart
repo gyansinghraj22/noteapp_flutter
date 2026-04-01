@@ -193,7 +193,7 @@ class AppThemes {
         iconTheme: IconThemeData(color: lightTextPrimary),
       ),
 
-      cardTheme: CardTheme(
+      cardTheme: CardThemeData(
         color: lightCardColor,
         elevation: 1,
         shadowColor: Colors.black.withOpacity(0.06),
@@ -303,7 +303,7 @@ class AppThemes {
         iconTheme: IconThemeData(color: darkTextPrimary),
       ),
 
-      cardTheme: CardTheme(
+      cardTheme: CardThemeData(
         color: darkCardColor,
         elevation: 4,
         shadowColor: Colors.black.withOpacity(0.3),

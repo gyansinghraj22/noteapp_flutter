@@ -1,58 +1,52 @@
-name: Build & Release APK
+name: Flutter APK Build
 
 on:
   push:
-    branches:
-      - main
-    tags:
-      - "v*" # Trigger release when you push a version tag like v1.0.0
+    branches: [ main ]
+  workflow_dispatch:
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
-    permissions:
-      contents: write # Allows the token to create a Release and upload the APK
     steps:
-      # 1. Checkout the code
-      - name: Checkout repository
+      # 📥 Checkout repository
+      - name: Checkout code
         uses: actions/checkout@v4
 
-      # 2. Set up Java (Required for Android builds)
+      # ☕ Set up Java (required for Android build)
       - name: Set up Java
         uses: actions/setup-java@v4
         with:
-          distribution: "zulu"
-          java-version: "17"
+          distribution: 'temurin'
+          java-version: '17'
 
-      # 3. Set up Flutter
+      # 🐦 Set up Flutter (IMPORTANT: Dart 3.7+ support)
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.22.0'
-          channel: "stable"
+          flutter-version: '3.24.0'
+          channel: 'stable'
 
-      # 4. Get dependencies
-      - run: flutter clean
+      # 🔍 Verify installation (optional but useful)
+      - name: Flutter doctor
+        run: flutter doctor -v
+
+      # 🧹 Clean project
+      - name: Clean project
+        run: flutter clean
+
+      # 📦 Get dependencies
       - name: Install dependencies
         run: flutter pub get
 
-      # 5. Build the APK (Debug version for easy testing)
+      # ⚡ Build APK (release)
       - name: Build APK
-        run: flutter build apk --debug
+        run: flutter build apk --release
 
-      # 6. Upload as an Artifact (Temporary - 90 days)
-      - name: Upload Artifact
+      # 📤 Upload APK as artifact
+      - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: flutter-apk
-          path: build/app/outputs/flutter-apk/app-debug.apk
-
-      # 7. Create a GitHub Release (Permanent - only runs on tags)
-      - name: Create Release
-        if: startsWith(github.ref, 'refs/tags/')
-        uses: softprops/action-gh-release@v1
-        with:
-          files: build/app/outputs/flutter-apk/app-debug.apk
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          name: app-release-apk
+          path: build/app/outputs/flutter-apk/app-release.apk

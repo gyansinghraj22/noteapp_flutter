@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:noteapp/core/common/error_model/error_model.dart';
 import 'package:noteapp/features/profile/services/profile_service.dart';
-import 'package:noteapp/features/profile/services/profile_service.dart';
 
 part 'profile_event.dart';
 part 'profile_state.dart';

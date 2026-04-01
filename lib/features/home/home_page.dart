@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:noteapp/core/common/base_page/base_page.dart';
-import 'package:noteapp/features/note/screens/add_note.dart';
+// import 'package:noteapp/features/note/screens/add_note.dart';
 import 'package:noteapp/features/note/screens/list_note.dart';
 import 'package:noteapp/core/config/theme_toggle_widgets.dart';
 import 'package:noteapp/features/profile/screens/profile_screen.dart';
@@ -36,31 +36,31 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Widget _buildFloatingActionButton() {
-    return Container(
-      width: 56,
-      height: 56,
-      margin: const EdgeInsets.only(bottom: 10),
-      child: FloatingActionButton(
-        onPressed: () async {
-          FocusScope.of(context).unfocus();
-          final result = await Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => const AddNoteScreen()),
-          );
+  // Widget _buildFloatingActionButton() {
+  //   return Container(
+  //     width: 56,
+  //     height: 56,
+  //     margin: const EdgeInsets.only(bottom: 10),
+  //     child: FloatingActionButton(
+  //       onPressed: () async {
+  //         FocusScope.of(context).unfocus();
+  //         final result = await Navigator.push(
+  //           context,
+  //           MaterialPageRoute(builder: (context) => const AddNoteScreen()),
+  //         );
 
-          // Refresh notes list if a note was added
-          if (result == true ) {
-            // Refresh the notes list by calling setState
-            setState(() {});
-          }
-        },
-        backgroundColor: Theme.of(context).colorScheme.primary,
-        elevation: 4,
-        child: const Icon(Icons.add, color: Colors.white, size: 28),
-      ),
-    );
-  }
+  //         // Refresh notes list if a note was added
+  //         if (result == true ) {
+  //           // Refresh the notes list by calling setState
+  //           setState(() {});
+  //         }
+  //       },
+  //       backgroundColor: Theme.of(context).colorScheme.primary,
+  //       elevation: 4,
+  //       child: const Icon(Icons.add, color: Colors.white, size: 28),
+  //     ),
+  //   );
+  // }
 
   Widget _buildBottomNavigationBar() {
     return Container(

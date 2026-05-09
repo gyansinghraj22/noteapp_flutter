@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:noteapp/constants/app_colors.dart';
-import 'package:noteapp/core/common/custom_form_field/custom_drop_down.dart';
 import 'package:noteapp/core/common/custom_form_field/custom_form_field_config.dart';
 import 'package:noteapp/core/common/custom_form_field/custom_image_picker.dart';
 import 'package:noteapp/core/common/custom_form_field/custom_multi_line_form_field.dart';
+import 'package:noteapp/core/common/custom_form_field/custom_drop_down.dart';
+import 'package:noteapp/core/common/custom_form_field/custom_radio_button.dart';
+// import 'package:noteapp/core/common/custom_form_field/popup_drop_down.dart';
 import 'package:noteapp/core/common/custom_form_field/custom_switch.dart';
 import 'package:noteapp/core/extention/color_extention.dart';
 import 'package:noteapp/core/typography/font_style_extentions.dart';
@@ -64,6 +67,8 @@ class _CustomFormFieldState extends State<CustomFormField> {
 
       case FieldType.number:
         return textFieldWidget();
+      case FieldType.radio:
+        return CustomRadioButtonFormField(config: widget.config);
       default:
         return textFieldWidget();
     }
@@ -79,14 +84,21 @@ class _CustomFormFieldState extends State<CustomFormField> {
       children: [
         if (widget.config.showLabel)
           Padding(
-            padding: const EdgeInsets.symmetric(vertical: 2.0),
+            padding: const EdgeInsets.all(2.0),
             child: Text(
               widget.config.label,
-              style: context.textBlackStyle().bold.medium,
+              style: context.textBlackStyle().bold.medium.copyWith(
+                color: ColorPalete.brightSky[700],
+              ),
             ),
           ),
-        if (widget.config.showLabel) SizedBox(height: 8),
+        if (widget.config.showLabel) SizedBox(height: 6.h),
         TextFormField(
+          focusNode: widget.config.focusNode,
+          textInputAction:
+              widget.config.nextFocusNode != null
+                  ? TextInputAction.next
+                  : TextInputAction.done,
           style:
               context
                   .textStyle(palette: ColorPalete.slate, swatch: 700)
@@ -105,6 +117,11 @@ class _CustomFormFieldState extends State<CustomFormField> {
             }
             if (widget.config.onFieldSubmitted != null) {
               widget.config.onFieldSubmitted!(value);
+            }
+            if (widget.config.nextFocusNode != null) {
+              FocusScope.of(context).requestFocus(widget.config.nextFocusNode);
+            } else {
+              FocusScope.of(context).unfocus();
             }
           },
           onSaved: widget.config.onSaved ?? widget.config.onFieldSubmitted,
@@ -132,6 +149,10 @@ class _CustomFormFieldState extends State<CustomFormField> {
           keyboardType: KeyboardSelector.keyboardType(widget.config.fieldType),
           readOnly: widget.config.fieldType == FieldType.country ? true : false,
           decoration: InputDecoration(
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 16,
+              vertical: 14,
+            ),
             counterText: "",
             suffixIcon:
                 widget.config.fieldType == FieldType.password ||
@@ -154,12 +175,12 @@ class _CustomFormFieldState extends State<CustomFormField> {
             filled: true,
             focusColor: widget.config.style == null ? null : Colors.white,
             prefixIcon: widget.config.prefixIcon,
-            hintText: widget.config.hintText,
-            labelText:
-                "${widget.config.label}${widget.config.isRequired ?? false ? " * " : ""}",
-            labelStyle: context.textBlackStyle().medium.regular.copyWith(
-              color: AppColor.greyColor.withAlpha(254),
-            ),
+            hintText: widget.config.label,
+            // labelText:
+            //     "${widget.config.label}${widget.config.isRequired ?? false ? " * " : ""}",
+            // labelStyle: context.textBlackStyle().medium.regular.copyWith(
+            //   color: AppColor.greyColor.withAlpha(254),
+            // ),
           ),
         ),
       ],

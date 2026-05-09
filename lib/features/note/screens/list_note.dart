@@ -90,189 +90,144 @@ class ListNoteScreenState extends State<ListNoteScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return BasePage(
-      showAppBar: false,
-      bodyColor: Theme.of(context).scaffoldBackgroundColor,
-      body: Column(
-        children: [
-          // Main Content
-          Expanded(
-            child: CustomScrollView(
-              physics: const BouncingScrollPhysics(),
-              slivers: [
-                _buildSearchSection(),
-                _horizontalFilterSection(),
-                _buildNotesList(),
+    return CustomScrollView(
+      slivers: [
+        SliverPadding(
+          padding: EdgeInsets.only(left: 16.w, right: 16.w, top: 44.h),
+          sliver: SliverToBoxAdapter(
+            child: Row(
+              children: [
+                Text(
+                  'Notes',
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.onBackground,
+                    fontWeight: FontWeight.w700,
+                    fontSize: 20.sp,
+                  ),
+                ),
+                Spacer(),
+                IconButton(icon: Icon(Icons.search), onPressed: () {}),
+                IconButton(icon: Icon(Icons.more_vert), onPressed: () {}),
               ],
+            ),
+          ),
+        ),
+
+        // Filter Chips Section
+        SliverPadding(
+          padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.w),
+          sliver: SliverToBoxAdapter(child: _horizontalFilterSection()),
+        ),
+
+        // Notes List Section
+        SliverPadding(
+          padding: EdgeInsets.symmetric(horizontal: 16.w),
+          sliver: SliverList(
+            delegate: SliverChildBuilderDelegate((context, index) {
+              final note = filteredNotes[index];
+
+              return Padding(
+                padding: EdgeInsets.only(bottom: 8.h),
+                child: _buildNoteCard(note),
+              );
+            }, childCount: filteredNotes.length),
+          ),
+        ),
+
+        // Bottom padding
+        SliverPadding(
+          padding: EdgeInsets.only(bottom: 24.h),
+          sliver: SliverToBoxAdapter(child: SizedBox.shrink()),
+        ),
+      ],
+    );
+  }
+
+  Widget _horizontalFilterSection() {
+    return SizedBox(
+      height: 36.h,
+      child: ListView.separated(
+        scrollDirection: Axis.horizontal,
+        itemCount: categories.length,
+        separatorBuilder: (context, index) => SizedBox(width: 8.w),
+        itemBuilder: (context, index) {
+          final category = categories[index];
+          final isSelected = category == selectedCategory;
+          return FilterChip(
+            label: Text(category),
+            selected: isSelected,
+            onSelected: (selected) {
+              setState(() {
+                selectedCategory = category;
+              });
+            },
+            backgroundColor: Theme.of(context).colorScheme.surface,
+            selectedColor: Theme.of(context).colorScheme.primary,
+            labelStyle: TextStyle(
+              color:
+                  isSelected
+                      ? Theme.of(context).colorScheme.onPrimary
+                      : Theme.of(context).colorScheme.onSurface,
+              fontWeight: FontWeight.w500,
+              fontSize: 13.sp,
+            ),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(20.r),
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildNoteCard(Map<String, dynamic> note) {
+    return Container(
+      padding: EdgeInsets.all(16.w),
+      decoration: BoxDecoration(
+        color: Colors.grey.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(16.r),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Title + Time
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Expanded(
+                child: Text(
+                  note["title"],
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+              Text(note["time"], style: const TextStyle(color: Colors.white54)),
+            ],
+          ),
+
+          SizedBox(height: 8.h),
+
+          // Description
+          Text(note["desc"], style: const TextStyle(color: Colors.white70)),
+
+          SizedBox(height: 8.h),
+
+          // Category Tag
+          Container(
+            padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 4.h),
+            decoration: BoxDecoration(
+              color: AppColor.brightSkyMain.withAlpha(30),
+              borderRadius: BorderRadius.circular(10.r),
+            ),
+            child: Text(
+              note["category"],
+              style: TextStyle(color: AppColor.brightSkyMain, fontSize: 12.sp),
             ),
           ),
         ],
       ),
-    );
-  }
-
-  // 🔍 SEARCH
-  SliverToBoxAdapter _buildSearchSection() {
-    return SliverToBoxAdapter(
-      child: SizedBox(
-        height: 90.h,
-        child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: _horizontalPadding.w),
-          child: CustomFormFieldGenerator(
-            onFieldSubmitted: (data) {
-              formData = data ?? {};
-              setState(() {});
-            },
-            formKey: _formKey,
-            formFields: formFields,
-          ),
-        ),
-      ),
-    );
-  }
-
-  // 🏷️ FILTER CHIPS
-  SliverToBoxAdapter _horizontalFilterSection() {
-    return SliverToBoxAdapter(
-      child: SizedBox(
-        height: 48.h,
-        child: ListView.builder(
-          scrollDirection: Axis.horizontal,
-          padding: EdgeInsets.symmetric(
-            horizontal: _horizontalPadding.w,
-            vertical: _horizontalPadding.h / 2,
-          ),
-          itemCount: categories.length,
-          itemBuilder: (context, index) {
-            final category = categories[index];
-            final isSelected = selectedCategory == category;
-
-            return GestureDetector(
-              onTap: () {
-                setState(() {
-                  selectedCategory = category;
-                });
-              },
-              child: Container(
-                margin: EdgeInsets.only(right: 10.w),
-                padding: EdgeInsets.symmetric(horizontal: 16.w),
-                alignment: Alignment.center,
-                decoration: BoxDecoration(
-                  color:
-                      isSelected
-                          ? AppColor.brightSkyMain
-                          : Colors.grey.withAlpha(10),
-                  borderRadius: BorderRadius.circular(20.r),
-                ),
-                child: Text(
-                  category,
-                  style: TextStyle(
-                    color: isSelected ? Colors.white : Colors.white70,
-                  ),
-                ),
-              ),
-            );
-          },
-        ),
-      ),
-    );
-  }
-
-  // 📄 NOTES LIST
-  SliverList _buildNotesList() {
-    final data = filteredNotes;
-
-    return SliverList(
-      delegate: SliverChildBuilderDelegate((context, index) {
-        final note = data[index];
-
-        return Dismissible(
-          key: Key(note["title"]),
-          direction: DismissDirection.endToStart,
-          onDismissed: (_) {
-            setState(() {
-              notes.remove(note);
-            });
-          },
-          background: Container(
-            margin: EdgeInsets.symmetric(
-              horizontal: _horizontalPadding.w,
-              vertical: 6.h,
-            ),
-            padding: EdgeInsets.only(right: 20.w),
-            alignment: Alignment.centerRight,
-            decoration: BoxDecoration(
-              color: Colors.red,
-              borderRadius: BorderRadius.circular(16.r),
-            ),
-            child: const Icon(Icons.delete, color: Colors.white),
-          ),
-          child: Container(
-            margin: EdgeInsets.symmetric(
-              horizontal: _horizontalPadding.w,
-              vertical: 6.h,
-            ),
-            padding: EdgeInsets.all(16.w),
-            decoration: BoxDecoration(
-              color: Colors.grey.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(16.r),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Title + Time
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Expanded(
-                      child: Text(
-                        note["title"],
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                    Text(
-                      note["time"],
-                      style: const TextStyle(color: Colors.white54),
-                    ),
-                  ],
-                ),
-
-                SizedBox(height: 8.h),
-
-                // Description
-                Text(
-                  note["desc"],
-                  style: const TextStyle(color: Colors.white70),
-                ),
-
-                SizedBox(height: 8.h),
-
-                // Category Tag
-                Container(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: 10.w,
-                    vertical: 4.h,
-                  ),
-                  decoration: BoxDecoration(
-                    color: AppColor.brightSkyMain.withAlpha(30),
-                    borderRadius: BorderRadius.circular(10.r),
-                  ),
-                  child: Text(
-                    note["category"],
-                    style: TextStyle(
-                      color: AppColor.brightSkyMain,
-                      fontSize: 12.sp,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        );
-      }, childCount: data.length),
     );
   }
 }

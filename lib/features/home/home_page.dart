@@ -64,7 +64,7 @@ class _HomePageState extends State<HomePage> {
 
   Widget _buildBottomNavigationBar() {
     return Container(
-      height: 70.h,
+      height: 80.h,
       decoration: BoxDecoration(
         color: Theme.of(context).cardColor,
         borderRadius: const BorderRadius.only(

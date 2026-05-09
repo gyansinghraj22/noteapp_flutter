@@ -16,6 +16,7 @@ enum FieldType {
   amount,
   multiLine,
   searchField,
+  radio,
 }
 
 @immutable
@@ -41,6 +42,8 @@ class CustomFormFieldConfig {
   final bool? textCapitalization;
   final TextStyle? style;
   final String? maskedInputCountryCode;
+  final FocusNode? focusNode;
+  final FocusNode? nextFocusNode;
   final bool? isLogIn;
   final Color? fieldColor;
   final Widget? suffixIcon;
@@ -65,6 +68,8 @@ class CustomFormFieldConfig {
     this.textCapitalization,
     this.style,
     this.maskedInputCountryCode,
+    this.focusNode,
+    this.nextFocusNode,
     this.isLogIn = false,
     this.fieldColor,
     this.suffixIcon,
@@ -105,6 +110,8 @@ class CustomFormFieldConfig {
     bool? textCapitalization,
     TextStyle? style,
     String? maskedInputCountryCode,
+    FocusNode? focusNode,
+    FocusNode? nextFocusNode,
     bool? isLoggedIn,
     Color? fieldColor,
     Widget? suffixIcon,
@@ -124,6 +131,8 @@ class CustomFormFieldConfig {
       style: style ?? this.style,
       maskedInputCountryCode:
           maskedInputCountryCode ?? this.maskedInputCountryCode,
+      focusNode: focusNode ?? this.focusNode,
+      nextFocusNode: nextFocusNode ?? this.nextFocusNode,
       isLogIn: isLogIn ?? isLogIn,
       fieldColor: fieldColor ?? this.fieldColor,
       suffixIcon: suffixIcon ?? this.suffixIcon,

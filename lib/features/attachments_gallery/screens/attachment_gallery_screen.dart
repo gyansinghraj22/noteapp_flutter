@@ -56,41 +56,6 @@ class _AttachmentGalleryScreenState extends State<AttachmentGalleryScreen> {
   Widget build(BuildContext context) {
     return CustomScrollView(
       slivers: [
-        // App Bar
-        // SliverAppBar(
-        //   backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-        //   elevation: 0,
-        //   title: Text(
-        //     'Attachments',
-        //     style: TextStyle(
-        //       color: Theme.of(context).colorScheme.onBackground,
-        //       fontWeight: FontWeight.w700,
-        //       fontSize: 20.sp,
-        //     ),
-        //   ),
-        //   actions: [
-        //     IconButton(
-        //       icon: Icon(
-        //         Icons.search,
-        //         color: Theme.of(context).colorScheme.onBackground,
-        //       ),
-        //       onPressed: () {
-        //         // TODO: Implement search functionality
-        //       },
-        //     ),
-        //     IconButton(
-        //       icon: Icon(
-        //         Icons.more_vert,
-        //         color: Theme.of(context).colorScheme.onBackground,
-        //       ),
-        //       onPressed: () {
-
-        //       },
-        //     ),
-        //   ],
-        //   pinned: true,
-        //   floating: true,
-        // ),
         SliverPadding(
           padding: EdgeInsets.only(left: 16.w, right: 16.w, top: 44.h),
           sliver: SliverToBoxAdapter(
@@ -105,7 +70,6 @@ class _AttachmentGalleryScreenState extends State<AttachmentGalleryScreen> {
                   ),
                 ),
                 Spacer(),
-
                 IconButton(icon: Icon(Icons.search), onPressed: () {}),
                 IconButton(icon: Icon(Icons.more_vert), onPressed: () {}),
               ],

@@ -5,11 +5,11 @@ import 'package:noteapp/core/extention/color_extention.dart';
 
 class FormFieldDecoration {
   static InputBorder getFocusedBorder(BuildContext context) {
-    return UnderlineInputBorder(
-      borderRadius: BorderRadius.circular(8.r),
+    return OutlineInputBorder(
+      borderRadius: BorderRadius.circular(12.r),
       borderSide: BorderSide(
         color: context.applyAppColor(palette: ColorPalete.brand, swatch: 700),
-        width: 1,
+        width: 0.5,
       ),
     );
   }
@@ -17,7 +17,7 @@ class FormFieldDecoration {
   static InputBorder getBoarder() {
     return UnderlineInputBorder(
       borderSide: BorderSide.none,
-      borderRadius: BorderRadius.circular(10),
+      borderRadius: BorderRadius.circular(12),
     );
   }
 

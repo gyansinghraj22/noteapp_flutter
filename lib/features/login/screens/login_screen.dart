@@ -54,7 +54,7 @@ class _LoginScreenState extends State<LoginScreen> {
     formFields = [
       const CustomFormFieldConfig(
         fieldType: FieldType.email,
-        id: "username",
+        id: "email",
         label: "Email Address",
         isRequired: true,
       ),
@@ -83,12 +83,12 @@ class _LoginScreenState extends State<LoginScreen> {
                     ? () {
                       BlocProvider.of<OtpVerificationBloc>(
                         context,
-                      ).add(SendOtpEvent(email: formData['username']));
+                      ).add(SendOtpEvent(email: formData['email']));
                       Navigator.pop(context);
                       Navigator.pushNamed(
                         context,
                         RoutePaths.oTPVerificationScreen,
-                        arguments: {"email": formData['username']},
+                        arguments: {"email": formData['email']},
                       );
                     }
                     : null,
@@ -280,12 +280,11 @@ class _LoginScreenState extends State<LoginScreen> {
               onPressed: () {
                 if (_formKey.currentState!.validate()) {
                   _formKey.currentState!.save();
-                  // _loadingOverlay.show(context);
-                  Navigator.pushNamed(context, "/homeScreen");
+                  _loadingOverlay.show(context);
 
-                  // BlocProvider.of<LoginBloc>(
-                  //   context,
-                  // ).add(UserLoginEvent(formData: formData));
+                  BlocProvider.of<LoginBloc>(
+                    context,
+                  ).add(UserLoginEvent(formData: formData));
                 }
               },
               labelStyle:

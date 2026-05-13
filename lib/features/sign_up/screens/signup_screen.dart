@@ -216,20 +216,21 @@ class _SignupScreenState extends State<SignupScreen> {
                 }
 
                 final Map<String, dynamic> request = {
+                  "name": formData['name'],
                   "email": formData['email'],
                   "password": password,
                 };
                 print(request);
 
-                // _loadingOverlay.show(context);
-                // BlocProvider.of<SignupBloc>(
-                //   context,
-                // ).add(SignupWithPassword(formData: request));
-                Navigator.pushNamed(
+                _loadingOverlay.show(context);
+                BlocProvider.of<SignupBloc>(
                   context,
-                  RoutePaths.oTPVerificationScreen,
-                  arguments: {"email": formData['email']},
-                );
+                ).add(SignupWithPassword(formData: request));
+                //   Navigator.pushNamed(
+                //     context,
+                //     RoutePaths.oTPVerificationScreen,
+                //     arguments: {"email": formData['email']},
+                //   );
               },
 
               color: context.applyAppColor(palette: ColorPalete.brand),

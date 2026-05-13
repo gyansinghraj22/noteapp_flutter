@@ -20,4 +20,5 @@ class RoutePaths {
   static const noteVersionHistory = '/noteVersionHistory';
   static const collaborationSharing = "/collaborationSharingScreen";
   static const addTag = '/addTagScreen';
+  static const searchScreen = '/searchScreen';
 }

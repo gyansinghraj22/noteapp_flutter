@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:noteapp/core/routes/route_paths.dart';
+import 'package:noteapp/core/navigation_service/navigation_service.dart';
 
 class AttachmentGalleryScreen extends StatefulWidget {
   const AttachmentGalleryScreen({super.key});
@@ -52,6 +54,13 @@ class _AttachmentGalleryScreenState extends State<AttachmentGalleryScreen> {
     },
   ];
 
+  List<String> get allAttachmentNames {
+    List<String> names = [];
+    names.addAll(recentMediaItems.map((item) => item['name'] as String));
+    names.addAll(documentsAndAudio.map((item) => item['name'] as String));
+    return names;
+  }
+
   @override
   Widget build(BuildContext context) {
     return CustomScrollView(
@@ -70,7 +79,21 @@ class _AttachmentGalleryScreenState extends State<AttachmentGalleryScreen> {
                   ),
                 ),
                 Spacer(),
-                IconButton(icon: Icon(Icons.search), onPressed: () {}),
+                IconButton(
+                  icon: Icon(Icons.search),
+                  onPressed: () {
+                    NavigationService.navigatorKey.currentState?.pushNamed(
+                      RoutePaths.searchScreen,
+                      arguments: {
+                        'searchItems': allAttachmentNames,
+                        'onItemSelected': (selectedItem) {
+                          print('Selected attachment: $selectedItem');
+                          Navigator.pop(context);
+                        },
+                      },
+                    );
+                  },
+                ),
                 IconButton(icon: Icon(Icons.more_vert), onPressed: () {}),
               ],
             ),

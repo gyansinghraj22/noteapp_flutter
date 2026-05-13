@@ -5,6 +5,8 @@ import 'package:noteapp/features/collaboration_sharing/screens/collaboration_sha
 import 'package:noteapp/features/home/home_page.dart';
 import 'package:noteapp/features/login/screens/login_screen.dart';
 import 'package:noteapp/features/note/screens/add_note.dart';
+import 'package:noteapp/features/note/screens/search_screen.dart';
+// import 'package:noteapp/features/note/screens/search_screen.dart';
 import 'package:noteapp/features/note/screens/update_note.dart';
 import 'package:noteapp/features/note_version/screens/note_version_history.dart';
 import 'package:noteapp/features/otp_verification/screens/otp_verification.dart';
@@ -99,6 +101,10 @@ class RouteHandler {
         return MaterialPageRoute(builder: (_) => AddTagScreen());
       case RoutePaths.signupScreen:
         return MaterialPageRoute(builder: (_) => const SignupScreen());
+      case RoutePaths.searchScreen:
+        final Map<String, dynamic> args =
+            settings.arguments as Map<String, dynamic>;
+        return MaterialPageRoute(builder: (_) => SearchScreen());
       default:
         return MaterialPageRoute(
           builder: (_) {

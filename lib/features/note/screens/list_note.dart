@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:noteapp/constants/app_colors.dart';
-import 'package:noteapp/core/common/base_page/base_page.dart';
 import 'package:noteapp/core/common/custom_form_field/custom_form_field_config.dart';
-import 'package:noteapp/core/common/custom_form_field/custom_form_field_generator.dart';
+import 'package:noteapp/core/navigation_service/navigation_service.dart';
+import 'package:noteapp/core/routes/route_paths.dart';
 
 class ListNoteScreen extends StatefulWidget {
   const ListNoteScreen({super.key});
@@ -14,11 +14,8 @@ class ListNoteScreen extends StatefulWidget {
 
 class ListNoteScreenState extends State<ListNoteScreen> {
   Map<String, dynamic> formData = {};
-  final _formKey = GlobalKey<FormState>();
 
   List<CustomFormFieldConfig> formFields = [];
-
-  static const double _horizontalPadding = 24;
 
   String selectedCategory = "All";
 
@@ -106,7 +103,24 @@ class ListNoteScreenState extends State<ListNoteScreen> {
                   ),
                 ),
                 Spacer(),
-                IconButton(icon: Icon(Icons.search), onPressed: () {}),
+                IconButton(
+                  icon: Icon(Icons.search),
+                  onPressed: () {
+                    NavigationService.navigatorKey.currentState?.pushNamed(
+                      RoutePaths.searchScreen,
+                      arguments: {
+                        'searchItems':
+                            notes
+                                .map((note) => note['title'] as String)
+                                .toList(),
+                        'onItemSelected': (selectedItem) {
+                          // Handle the selected item
+                          print('Selected: $selectedItem');
+                        },
+                      },
+                    );
+                  },
+                ),
                 IconButton(icon: Icon(Icons.more_vert), onPressed: () {}),
               ],
             ),

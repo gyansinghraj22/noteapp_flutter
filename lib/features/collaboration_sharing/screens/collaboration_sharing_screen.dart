@@ -41,173 +41,90 @@ class _CollaborationSharingScreenState
   @override
   Widget build(BuildContext context) {
     return BasePage(
-      showAppBar: false,
-      bodyColor: Theme.of(context).scaffoldBackgroundColor,
-      body: Column(
-        children: [
-          // Custom App Bar
-          _buildCustomAppBar(context),
+      showAppBar: true,
+      title: Text(
+        'Collaboration',
+        style: TextStyle(fontSize: 18.sp, fontWeight: FontWeight.w700),
+      ),
+      showBackButton: true,
+      body: CustomScrollView(
+        physics: const BouncingScrollPhysics(),
+        slivers: [
+          // Share Link Section
+          SliverPadding(
+            padding: EdgeInsets.all(16.w),
+            sliver: SliverToBoxAdapter(child: _buildShareLinkSection(context)),
+          ),
 
-          // Main Content
-          Expanded(
-            child: CustomScrollView(
-              physics: const BouncingScrollPhysics(),
-              slivers: [
-                // Share Link Section
-                SliverPadding(
-                  padding: EdgeInsets.all(16.w),
-                  sliver: SliverToBoxAdapter(
-                    child: _buildShareLinkSection(context),
-                  ),
-                ),
+          // Access Level Section
+          SliverPadding(
+            padding: EdgeInsets.symmetric(horizontal: 16.w),
+            sliver: SliverToBoxAdapter(
+              child: _buildAccessLevelSection(context),
+            ),
+          ),
 
-                // Access Level Section
-                SliverPadding(
-                  padding: EdgeInsets.symmetric(horizontal: 16.w),
-                  sliver: SliverToBoxAdapter(
-                    child: _buildAccessLevelSection(context),
-                  ),
-                ),
-
-                // Collaborators Section Header
-                SliverPadding(
-                  padding: EdgeInsets.only(
-                    left: 16.w,
-                    right: 16.w,
-                    top: 24.h,
-                    bottom: 12.h,
-                  ),
-                  sliver: SliverToBoxAdapter(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          "Collaborators",
-                          style: TextStyle(
-                            fontSize: 16.sp,
-                            fontWeight: FontWeight.w700,
-                            color: Theme.of(context).colorScheme.onBackground,
-                          ),
-                        ),
-                        SizedBox(height: 8.h),
-                        Text(
-                          "${collaborators.length} people have access",
-                          style: TextStyle(
-                            fontSize: 12.sp,
-                            fontWeight: FontWeight.w400,
-                            color: Theme.of(
-                              context,
-                            ).colorScheme.onBackground.withOpacity(0.6),
-                          ),
-                        ),
-                      ],
+          // Collaborators Section Header
+          SliverPadding(
+            padding: EdgeInsets.only(
+              left: 16.w,
+              right: 16.w,
+              top: 24.h,
+              bottom: 12.h,
+            ),
+            sliver: SliverToBoxAdapter(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    "Collaborators",
+                    style: TextStyle(
+                      fontSize: 16.sp,
+                      fontWeight: FontWeight.w700,
+                      color: Theme.of(context).colorScheme.onBackground,
                     ),
                   ),
-                ),
-
-                // Collaborators List
-                SliverPadding(
-                  padding: EdgeInsets.symmetric(horizontal: 16.w),
-                  sliver: SliverList(
-                    delegate: SliverChildBuilderDelegate((context, index) {
-                      return Padding(
-                        padding: EdgeInsets.only(bottom: 12.h),
-                        child: _buildCollaboratorCard(
-                          context,
-                          collaborators[index],
-                        ),
-                      );
-                    }, childCount: collaborators.length),
+                  SizedBox(height: 8.h),
+                  Text(
+                    "${collaborators.length} people have access",
+                    style: TextStyle(
+                      fontSize: 12.sp,
+                      fontWeight: FontWeight.w400,
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.onBackground.withOpacity(0.6),
+                    ),
                   ),
-                ),
-
-                // Add Collaborator Section
-                SliverPadding(
-                  padding: EdgeInsets.all(16.w),
-                  sliver: SliverToBoxAdapter(
-                    child: _buildAddCollaboratorButton(context),
-                  ),
-                ),
-
-                // Bottom Padding
-                SliverPadding(
-                  padding: EdgeInsets.only(bottom: 24.h),
-                  sliver: SliverToBoxAdapter(child: SizedBox.shrink()),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  // 🎨 CUSTOM APP BAR
-  Widget _buildCustomAppBar(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.only(
-        left: 16.w,
-        right: 16.w,
-        top: 12.h,
-        bottom: 12.h,
-      ),
-      decoration: BoxDecoration(
-        color: Theme.of(context).scaffoldBackgroundColor,
-        border: Border(
-          bottom: BorderSide(
-            color: Theme.of(context).colorScheme.outline.withOpacity(0.1),
-          ),
-        ),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          // Back Button
-          GestureDetector(
-            onTap: () => Navigator.pop(context),
-            child: Container(
-              width: 36.w,
-              height: 36.w,
-              decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.surface,
-                borderRadius: BorderRadius.circular(8.r),
-              ),
-              child: Icon(
-                Icons.arrow_back,
-                color: Theme.of(context).colorScheme.onSurface,
-                size: 20.sp,
+                ],
               ),
             ),
           ),
 
-          // Title
-          Text(
-            "Sharing & Access",
-            style: TextStyle(
-              fontSize: 16.sp,
-              fontWeight: FontWeight.w700,
-              color: Theme.of(context).colorScheme.onBackground,
+          // Collaborators List
+          SliverPadding(
+            padding: EdgeInsets.symmetric(horizontal: 16.w),
+            sliver: SliverList(
+              delegate: SliverChildBuilderDelegate((context, index) {
+                return Padding(
+                  padding: EdgeInsets.only(bottom: 12.h),
+                  child: _buildCollaboratorCard(context, collaborators[index]),
+                );
+              }, childCount: collaborators.length),
             ),
           ),
 
-          // Settings Button
-          GestureDetector(
-            onTap: () {
-              // TODO: Show sharing settings
-            },
-            child: Container(
-              width: 36.w,
-              height: 36.w,
-              decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.surface,
-                borderRadius: BorderRadius.circular(8.r),
-              ),
-              child: Icon(
-                Icons.more_vert,
-                color: Theme.of(context).colorScheme.onSurface,
-                size: 20.sp,
-              ),
+          // Add Collaborator Section
+          SliverPadding(
+            padding: EdgeInsets.all(16.w),
+            sliver: SliverToBoxAdapter(
+              child: _buildAddCollaboratorButton(context),
             ),
+          ),
+
+          // Bottom Padding
+          SliverPadding(
+            padding: EdgeInsets.only(bottom: 24.h),
+            sliver: SliverToBoxAdapter(child: SizedBox.shrink()),
           ),
         ],
       ),

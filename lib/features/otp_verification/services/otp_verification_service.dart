@@ -61,9 +61,29 @@ class OTPVerificationService {
     }
   }
 
-  Future<Either<dynamic, ErrorModel>> sendOTP(String email) async {
+  Future<Either<dynamic, ErrorModel>> sendLoginOTP(String email) async {
     try {
-      var otpRespose = await apiCall.postData(ApiUrls.sendOtp, {
+      var otpRespose = await apiCall.postData(ApiUrls.loginOtp, {
+        'email': email,
+      });
+      if (otpRespose.statusCode == 200 || otpRespose.statusCode == 201) {
+        return left(otpRespose.data);
+      } else {
+        return right(
+          ErrorModel(
+            code: otpRespose.statusCode,
+            message: otpRespose.data['message'],
+          ),
+        );
+      }
+    } catch (e) {
+      return right(ErrorModel(code: 400, message: "OTP Sent failed"));
+    }
+  }
+
+  Future<Either<dynamic, ErrorModel>> registerOtp(String email) async {
+    try {
+      var otpRespose = await apiCall.postData(ApiUrls.signUpOtp, {
         'email': email,
       });
       if (otpRespose.statusCode == 200 || otpRespose.statusCode == 201) {

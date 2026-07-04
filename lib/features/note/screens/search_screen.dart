@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:noteapp/constants/app_colors.dart';
 import 'package:noteapp/core/common/base_page/base_page.dart';
-import 'package:noteapp/core/common/custom_app_bar/custom_app_bar.dart';
 import 'package:noteapp/core/common/custom_form_field/custom_form_field_config.dart';
 import 'package:noteapp/core/common/custom_form_field/custom_form_field_generator.dart';
 
@@ -111,7 +110,6 @@ class _SearchScreenState extends State<SearchScreen> {
                         'Search',
                         textAlign: TextAlign.center,
                         style: TextStyle(
-                        
                           color: Theme.of(context).colorScheme.onBackground,
                           fontWeight: FontWeight.w700,
                           fontSize: 20.sp,

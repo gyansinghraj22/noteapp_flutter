@@ -4,7 +4,7 @@ class ApiUrls {
   // static const String liveBaseUrl = 'http://localhost:8080';
 
   // static const String devBaseUrl = 'https://api.dev.proflowapps.com/api/v1/';
-  static const String devBaseUrl = 'http://192.168.100.233:8080/';
+  static const String devBaseUrl = 'http://192.168.1.12:8080/';
 
   // For Android Emulator use:
   // static const String devBaseUrl = 'http://10.0.2.2:8080/';
@@ -19,8 +19,8 @@ class ApiUrls {
   static const String refreshToken = 'api/auth/refresh';
   static const String logout = 'api/auth/logout';
 
-  static const String register = "/api/auth/register";
-  static const String signUpOtp = "/api/auth/register/otp/send";
+  static const String register = "api/auth/register";
+  static const String signUpOtp = "api/auth/register/otp/send";
   static const String captchaChallenge = '/api/auth/captcha/challenge';
 
   static const String downloadNetworkExcelFile =

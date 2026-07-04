@@ -8,6 +8,8 @@ class RoutePaths {
   static const resetPasswordOTPScreen = '/resetPasswordOTPScreen';
   static const resetPasswordEmailScreen = '/resetPasswordEmailScreen';
   static const signupScreen = '/signupScreen';
+  static const emailRegisterScreen = '/emailRegisterScreen';
+  static const registerOTPVerificationScreen = '/registerOTPVerificationScreen';
   static const oTPVerifySuccessScreen = '/oTPVerifySuccessScreen';
   static const oTPVerificationScreen = '/oTPVerificationScreen';
   static const userInformationInputScreen = '/userInformationInputScreen';

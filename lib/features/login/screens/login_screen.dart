@@ -13,6 +13,7 @@ import 'package:noteapp/core/common/loading_overlay/loading_overlay.dart';
 import 'package:noteapp/core/common/show_dialog/show_dialog.dart';
 import 'package:noteapp/core/common/snackbar/snackbar.dart';
 import 'package:noteapp/core/extention/color_extention.dart';
+import 'package:noteapp/features/captcha/screens/captcha_widget.dart';
 import 'package:noteapp/features/login/bloc/login_bloc.dart';
 import 'package:noteapp/features/login/widgets/background_with_image_widget.dart';
 import 'package:noteapp/features/login/widgets/login_footer_view.dart';
@@ -35,13 +36,15 @@ class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
   bool isRemember = false;
   String savedEmail = '';
+  String? captchaId;
+  String? captchaAnswer;
   List<CustomFormFieldConfig> formFields = [];
   bool canPop = false;
 
   @override
   void initState() {
-    getInitialData();
     super.initState();
+    getInitialData();
   }
 
   getInitialData() {
@@ -197,8 +200,15 @@ class _LoginScreenState extends State<LoginScreen> {
                 setState(() {});
               },
               formKey: _formKey,
-              updateData: {'username': savedEmail},
+              updateData: {'email': savedEmail},
               formFields: formFields,
+            ),
+            CaptchaWidget(
+              onChanged: (currentCaptchaId, currentCaptchaAnswer) {
+                captchaId = currentCaptchaId;
+                captchaAnswer = currentCaptchaAnswer;
+                setState(() {});
+              },
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -282,9 +292,15 @@ class _LoginScreenState extends State<LoginScreen> {
                   _formKey.currentState!.save();
                   _loadingOverlay.show(context);
 
+                  final loginPayload = <String, dynamic>{
+                    ...formData,
+                    'captchaId': captchaId,
+                    'captchaAnswer': captchaAnswer,
+                  };
+
                   BlocProvider.of<LoginBloc>(
                     context,
-                  ).add(UserLoginEvent(formData: formData));
+                  ).add(UserLoginEvent(formData: loginPayload));
                 }
               },
               labelStyle:

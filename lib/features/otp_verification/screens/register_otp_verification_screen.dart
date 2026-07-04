@@ -1,5 +1,6 @@
 import 'dart:async';
 
+// import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
@@ -15,17 +16,20 @@ import 'package:noteapp/features/otp_verification/bloc/otp_verification_bloc.dar
 import 'package:noteapp/features/otp_verification/cubit/resend_timer_cubit.dart';
 import 'package:noteapp/core/routes/route_paths.dart';
 import 'package:noteapp/core/typography/font_style_extentions.dart';
+import 'package:noteapp/features/sign_up/bloc/signup_bloc.dart';
 
-class OTPVerificationScreen extends StatefulWidget {
-  final String email;
+class RegisterOtpVerificationScreen extends StatefulWidget {
+  final Map<String, dynamic> formData;
 
-  const OTPVerificationScreen({super.key, required this.email});
+  const RegisterOtpVerificationScreen({super.key, required this.formData});
 
   @override
-  State<OTPVerificationScreen> createState() => _OTPVerificationScreenState();
+  State<RegisterOtpVerificationScreen> createState() =>
+      _RegisterOtpVerificationScreenState();
 }
 
-class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
+class _RegisterOtpVerificationScreenState
+    extends State<RegisterOtpVerificationScreen> {
   TextEditingController otpController = TextEditingController();
   // final _formKey = GlobalKey<FormState>();
   final _loadingOverlay = GetIt.instance.get<LoadingOverlay>();
@@ -42,7 +46,7 @@ class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
     _loadingOverlay.show(context);
     BlocProvider.of<OtpVerificationBloc>(
       context,
-    ).add(SendOtpEvent(email: widget.email));
+    ).add(SendOtpEvent(email: widget.formData['email']));
 
     resendTimer?.cancel();
     startResendTimer();
@@ -141,7 +145,7 @@ class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
                   ),
                   const SizedBox(height: 2),
                   Text(
-                    widget.email,
+                    widget.formData['email'],
                     style:
                         context
                             .textStyle(palette: ColorPalete.brand)
@@ -241,12 +245,14 @@ class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
                   CustomButton(
                     onPressed: () {
                       _loadingOverlay.show(context);
-                      BlocProvider.of<OtpVerificationBloc>(context).add(
-                        OtpVerifyEvent(
-                          otpNumber: otpNumber,
-                          email: widget.email,
-                        ),
-                      );
+                      // Add OTP code to formData before sending
+                      final Map<String, dynamic> registrationData = {
+                        ...widget.formData,
+                        "otpCode": otpNumber,
+                      };
+                      BlocProvider.of<SignupBloc>(
+                        context,
+                      ).add(SignupWithPassword(formData: registrationData));
                       // Navigator.pushNamed(
                       //     context, RoutePaths.oTPVerifySuccessScreen,
                       //     arguments: {

@@ -2,6 +2,8 @@ import 'package:get_it/get_it.dart';
 import 'package:noteapp/core/common/loading_overlay/loading_overlay.dart';
 import 'package:noteapp/core/network/dio_client.dart';
 import 'package:noteapp/core/services/image_upload_service.dart';
+import 'package:noteapp/features/captcha/bloc/catpcha_bloc.dart';
+import 'package:noteapp/features/captcha/service/captcha_service.dart';
 import 'package:noteapp/features/login/services/login_service.dart';
 import 'package:noteapp/features/otp_verification/services/otp_verification_service.dart';
 import 'package:noteapp/features/profile/services/profile_service.dart';
@@ -18,10 +20,14 @@ Future<void> setUpDi(String baseUrl) async {
   );
   getIt.registerLazySingleton<SignupService>(() => SignupService(getIt()));
   getIt.registerLazySingleton<LoginService>(() => LoginService(getIt()));
+  getIt.registerLazySingleton<CaptchaService>(() => CaptchaService(getIt()));
   getIt.registerSingleton<LoadingOverlay>(LoadingOverlay());
   getIt.registerSingleton<ResetPasswordService>(ResetPasswordService(getIt()));
   getIt.registerSingleton<OTPVerificationService>(
     OTPVerificationService(getIt()),
   );
   getIt.registerSingleton<ProfileService>(ProfileService(getIt()));
+  getIt.registerSingleton<CaptchaBloc>(
+    CaptchaBloc(captchaService: getIt<CaptchaService>()),
+  );
 }

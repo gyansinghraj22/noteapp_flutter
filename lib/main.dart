@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get_it/get_it.dart';
 import 'package:noteapp/constants/api_urls.dart';
 import 'package:noteapp/core/config/theme_cubit.dart';
 import 'package:noteapp/core/di/injector.dart';
@@ -13,6 +14,7 @@ import 'package:noteapp/core/navigation_service/navigation_service.dart';
 import 'package:noteapp/core/routes/route_handler.dart';
 import 'package:noteapp/core/splash/splash_screen.dart';
 import 'package:noteapp/core/utils/shared_pref.dart';
+import 'package:noteapp/features/captcha/bloc/catpcha_bloc.dart';
 import 'package:noteapp/features/login/bloc/login_bloc.dart';
 import 'package:noteapp/features/otp_verification/bloc/otp_verification_bloc.dart';
 import 'package:noteapp/features/otp_verification/cubit/resend_timer_cubit.dart';
@@ -56,6 +58,10 @@ class MyApp extends StatelessWidget {
         ),
 
         BlocProvider<LoginBloc>(create: (BuildContext context) => LoginBloc()),
+
+        BlocProvider<CaptchaBloc>.value(
+          value: GetIt.instance.get<CaptchaBloc>(),
+        ),
 
         BlocProvider<ResetPasswordBloc>(
           create: (BuildContext context) => ResetPasswordBloc(),

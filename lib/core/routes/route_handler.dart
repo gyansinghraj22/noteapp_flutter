@@ -11,11 +11,13 @@ import 'package:noteapp/features/note/screens/update_note.dart';
 import 'package:noteapp/features/note_version/screens/note_version_history.dart';
 import 'package:noteapp/features/otp_verification/screens/otp_verification.dart';
 import 'package:noteapp/features/otp_verification/screens/otp_verify_success_screen.dart';
+import 'package:noteapp/features/otp_verification/screens/register_otp_verification_screen.dart';
 import 'package:noteapp/features/reset_password/screens/reset_password_email_screen.dart';
 import 'package:noteapp/features/reset_password/screens/reset_password_otp_screen.dart';
 import 'package:noteapp/features/reset_password/screens/reset_password_screen.dart';
 import 'package:noteapp/features/reset_password/screens/reset_password_success_screen.dart';
 import 'package:noteapp/features/sign_up/screens/signup_screen.dart';
+import 'package:noteapp/features/sign_up/screens/email_register_screen.dart';
 import 'package:noteapp/features/sign_up/screens/user_information_input_screen.dart';
 import 'package:noteapp/core/routes/route_paths.dart';
 import 'package:noteapp/features/tags/screens/add_tag_screen.dart';
@@ -101,9 +103,17 @@ class RouteHandler {
         return MaterialPageRoute(builder: (_) => AddTagScreen());
       case RoutePaths.signupScreen:
         return MaterialPageRoute(builder: (_) => const SignupScreen());
+      case RoutePaths.emailRegisterScreen:
+        return MaterialPageRoute(builder: (_) => const EmailRegisterScreen());
+      case RoutePaths.registerOTPVerificationScreen:
+        args as Map;
+        return MaterialPageRoute(
+          builder:
+              (_) => RegisterOtpVerificationScreen(
+                formData: args as Map<String, dynamic>,
+              ),
+        );
       case RoutePaths.searchScreen:
-        final Map<String, dynamic> args =
-            settings.arguments as Map<String, dynamic>;
         return MaterialPageRoute(builder: (_) => SearchScreen());
       default:
         return MaterialPageRoute(

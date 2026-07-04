@@ -17,14 +17,15 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
         var result = await loginService.userLogin(formData: event.formData);
         result.fold(
           (l) {
-            emit(UserLoginSuccessState(response: l));
-          },
-          (r) {
             emit(
               UserLoginErrorState(
-                errorModel: ErrorModel(code: r.code, message: r.message),
+                errorModel: ErrorModel(code: l.code, message: l.message),
               ),
             );
+          
+          },
+          (r) {
+              emit(UserLoginSuccessState(response: r));
           },
         );
       }

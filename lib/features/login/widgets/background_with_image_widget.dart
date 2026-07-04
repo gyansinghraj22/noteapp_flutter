@@ -8,7 +8,7 @@ class BackgroundWithImageWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: Colors.white,
+      // color: Colors.white,
       margin: EdgeInsets.zero,
       padding: EdgeInsets.zero,
       child: Padding(
@@ -17,7 +17,7 @@ class BackgroundWithImageWidget extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Image.asset(AppImages.tearDrop, width: 53.w, height: 48.h),
+            // Image.asset(AppImages.tearDrop, width: 53.w, height: 48.h),
 
             // Image.asset(AppImages.appImage, height: 35.h, width: 41.w),
             // Image.asset(

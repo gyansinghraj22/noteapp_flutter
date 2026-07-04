@@ -49,8 +49,22 @@ class OtpVerificationBloc
             );
           },
         );
-      } else if (event is SendOtpEvent) {
-        var result = await oTPVerificationService.sendOTP(event.email);
+      } else if (event is SendLoginOtpEvent) {
+        var result = await oTPVerificationService.sendLoginOTP(event.email);
+        result.fold(
+          (l) {
+            emit(SendOtpSuccessState(response: l));
+          },
+          (r) {
+            emit(
+              SendOtpErrorState(
+                errorModel: ErrorModel(code: r.code, message: r.message),
+              ),
+            );
+          },
+        );
+      } else if (event is SendRegisterOtpEvent) {
+        var result = await oTPVerificationService.registerOtp(event.email);
         result.fold(
           (l) {
             emit(SendOtpSuccessState(response: l));

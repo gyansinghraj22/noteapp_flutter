@@ -13,26 +13,22 @@ import 'package:noteapp/core/extention/color_extention.dart';
 import 'package:noteapp/core/routes/route_paths.dart';
 import 'package:noteapp/core/typography/font_style_extentions.dart';
 import 'package:noteapp/features/login/widgets/background_with_image_widget.dart';
-import 'package:noteapp/features/login/widgets/login_footer_view.dart';
 import 'package:noteapp/features/otp_verification/bloc/otp_verification_bloc.dart';
 import 'package:noteapp/features/sign_up/bloc/signup_bloc.dart';
 
-class SignupScreen extends StatefulWidget {
-  const SignupScreen({super.key});
+class EmailRegisterScreen extends StatefulWidget {
+  const EmailRegisterScreen({super.key});
 
   @override
-  State<SignupScreen> createState() => _SignupScreenState();
+  State<EmailRegisterScreen> createState() => _EmailRegisterScreenState();
 }
 
-class _SignupScreenState extends State<SignupScreen> {
+class _EmailRegisterScreenState extends State<EmailRegisterScreen> {
   final _loadingOverlay = GetIt.instance.get<LoadingOverlay>();
   final _formKey = GlobalKey<FormState>();
   Map<String, dynamic> formData = {};
   List<CustomFormFieldConfig> formFields = [];
   bool canPop = false;
-  String password = '';
-  String confirmPassword = '';
-  // bool isVetSelected = true;
 
   @override
   void initState() {
@@ -43,37 +39,9 @@ class _SignupScreenState extends State<SignupScreen> {
   getFormField() {
     formFields = [
       const CustomFormFieldConfig(
-        fieldType: FieldType.text,
-        id: "username",
-        label: "Full Name",
-        isRequired: true,
-      ),
-      const CustomFormFieldConfig(
         fieldType: FieldType.email,
         id: "email",
         label: "Email Address",
-        isRequired: true,
-      ),
-      CustomFormFieldConfig(
-        fieldType: FieldType.password,
-        id: "password",
-        label: "Password",
-        isRequired: true,
-        onChanged: (String value) {
-          password = value;
-          setState(() {});
-        },
-        isObscure: true,
-      ),
-      CustomFormFieldConfig(
-        fieldType: FieldType.confirmPassword,
-        id: "confirmPassword",
-        label: "Confirm Password",
-        isObscure: true,
-        onChanged: (String value) {
-          confirmPassword = value;
-          setState(() {});
-        },
         isRequired: true,
       ),
     ];
@@ -87,8 +55,8 @@ class _SignupScreenState extends State<SignupScreen> {
           _loadingOverlay.hide();
           Navigator.pushNamed(
             context,
-            RoutePaths.oTPVerificationScreen,
-            arguments: formData,
+            RoutePaths.signupScreen,
+            arguments: {"email": formData['email'], "fromEmailRegister": true},
           );
         } else if (state is SignupWithPasswordErrorState) {
           _loadingOverlay.hide();
@@ -99,13 +67,7 @@ class _SignupScreenState extends State<SignupScreen> {
                     ? () {
                       BlocProvider.of<OtpVerificationBloc>(
                         context,
-                      ).add(SendRegisterOtpEvent(email: formData['email']));
-                      Navigator.pop(context);
-                      Navigator.pushNamed(
-                        context,
-                        RoutePaths.registerOTPVerificationScreen,
-                        arguments: formData,
-                      );
+                      ).add(SendOtpEvent(email: formData['email']));
                     }
                     : null,
           );
@@ -138,7 +100,7 @@ class _SignupScreenState extends State<SignupScreen> {
     );
   }
 
-  Container buildLoginFormField(BuildContext context) {
+  Container buildEmailFormField(BuildContext context) {
     return Container(
       width: double.infinity,
       height: MediaQuery.of(context).size.height,
@@ -171,18 +133,6 @@ class _SignupScreenState extends State<SignupScreen> {
               style: context.textBlackStyle().medium.bold,
             ),
             const SizedBox(height: 18),
-
-            // SizedBox(
-            //   width: 20.w,
-            //   child: VetUserSwitch(
-            //     initialIsVet: true,
-            //     onChanged: (isVet) {
-            //       setState(() {
-            //         isVetSelected = isVet;
-            //       });
-            //     },
-            //   ),
-            // ),
             CustomFormFieldGenerator(
               formKey: _formKey,
               onFieldSubmitted: (data) {
@@ -191,60 +141,31 @@ class _SignupScreenState extends State<SignupScreen> {
               },
               formFields: formFields,
             ),
-            Visibility(
-              visible:
-                  (password.isNotEmpty &&
-                      confirmPassword.isNotEmpty &&
-                      password != confirmPassword),
-              child: Text(
-                "Password and Confirm Password must be the same.",
-                style:
-                    context.textStyle(palette: ColorPalete.red).xsmall.regular,
-              ),
-            ),
-            const SizedBox(height: 5),
+            const SizedBox(height: 24),
             CustomButton(
               height: 55,
               onPressed: () {
-                final bool isPasswordValid =
-                    password.isNotEmpty &&
-                    confirmPassword.isNotEmpty &&
-                    password == confirmPassword;
-
-                if (!_formKey.currentState!.validate() || !isPasswordValid) {
+                if (!_formKey.currentState!.validate()) {
                   return;
                 }
 
                 final Map<String, dynamic> request = {
                   "email": formData['email'],
-                  // "password": password,
                 };
-                // print(request);
+                print(request);
 
                 _loadingOverlay.show(context);
-                BlocProvider.of<OtpVerificationBloc>(
+                BlocProvider.of<SignupBloc>(
                   context,
-                ).add(SendRegisterOtpEvent(email: formData['email']));
-
-                // Add password to formData before navigating
-                formData['password'] = password;
-
-                Navigator.pushNamed(
-                  context,
-                  RoutePaths.registerOTPVerificationScreen,
-                  arguments: formData,
-                );
+                ).add(SignupWithPassword(formData: request));
               },
-
               color: context.applyAppColor(palette: ColorPalete.brand),
               labelStyle:
                   context.textStyle(palette: ColorPalete.white).xlarge.semiBold,
               buttonPadding: EdgeInsets.zero,
-
-              label: "Sign Up",
+              label: "Continue",
             ),
             const SizedBox(height: 16),
-            const AuthenticateFooterView(routePath: ""),
           ],
         ),
       ),
@@ -260,7 +181,6 @@ class _SignupScreenState extends State<SignupScreen> {
           pinned: true,
           snap: true,
           floating: true,
-          // expandedHeight: 200.h,
           flexibleSpace: const FlexibleSpaceBar(
             background: Hero(
               tag: "toolbar",
@@ -273,7 +193,7 @@ class _SignupScreenState extends State<SignupScreen> {
             BuildContext context,
             int index,
           ) {
-            return buildLoginFormField(context);
+            return buildEmailFormField(context);
           }),
         ),
       ],

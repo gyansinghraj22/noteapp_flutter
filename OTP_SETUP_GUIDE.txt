@@ -1,0 +1,405 @@
+═══════════════════════════════════════════════════════════════════════════════
+                        OTP IMPLEMENTATION - SETUP GUIDE
+═══════════════════════════════════════════════════════════════════════════════
+
+✅ WHAT HAS BEEN IMPLEMENTED
+
+1. SIGNUP OTP FLOW (/sign_up/)
+   └─ SendSignupOtpEvent → POST /api/auth/register/otp/send
+   └─ VerifySignupOtpEvent → POST /api/auth/register
+   └─ Saves token, email, userId after successful registration
+
+2. LOGIN OTP FLOW (/otp_verification/)
+   └─ SendOtpEvent → POST /api/v1/send-otp
+   └─ OtpVerifyEvent → POST /api/auth/verify-otp
+   └─ Saves token after successful verification
+   └─ Now has loading states
+
+3. PASSWORD RESET OTP FLOW (/otp_verification/)
+   └─ SendOtpEvent → POST /api/v1/send-otp
+   └─ PasswordOtpVerifyEvent → POST /api/auth/login/backup-code
+   └─ Verifies OTP for password change
+
+4. IMPROVEMENTS MADE
+   ✅ Added token saving in signup registration
+   ✅ Added loading states to OTP verification
+   ✅ Better error handling with descriptive messages
+   ✅ Null-safe token/user data extraction
+   ✅ Added purpose enum to SendOtpEvent
+   ✅ Added JavaDoc comments
+
+
+═══════════════════════════════════════════════════════════════════════════════
+                           API CONTRACTS REQUIRED
+═══════════════════════════════════════════════════════════════════════════════
+
+ENDPOINT 1: SEND SIGNUP OTP
+────────────────────────────
+POST /api/auth/register/otp/send
+Content-Type: application/json
+
+REQUEST:
+{
+  "email": "user@example.com"
+}
+
+RESPONSE (200/201):
+{
+  "sent": true,
+  "message": "Signup OTP sent to email"
+}
+
+RESPONSE (Error):
+{
+  "code": 400,
+  "message": "Invalid email format"
+}
+
+
+ENDPOINT 2: REGISTER WITH OTP
+──────────────────────────────
+POST /api/auth/register
+Content-Type: application/json
+
+REQUEST:
+{
+  "email": "user@example.com",
+  "otpCode": "123456",          ← Field name is "otpCode" (not "otp")
+  "username": "testuser",
+  "password": "TestPassword123!"
+}
+
+RESPONSE (200/201):
+{
+  "message": "User registered successfully",
+  "token": "eyJhbGciOiJIUzI1NiIs...",  ← Should return token
+  "email": "user@example.com",          ← Should return email
+  "userId": "user_123"                   ← Should return userId or id
+}
+
+ERROR RESPONSE:
+{
+  "code": 400,
+  "message": "OTP verification failed" or "User already exists"
+}
+
+
+ENDPOINT 3: SEND OTP (LOGIN/PASSWORD RESET)
+─────────────────────────────────────────────
+POST /api/v1/send-otp
+Content-Type: application/json
+
+REQUEST:
+{
+  "email": "user@example.com"
+}
+
+RESPONSE (200/201):
+{
+  "sent": true,
+  "message": "OTP sent to email"
+}
+
+⚠️ NOTE: This is v1 endpoint. Consider updating to /api/auth/login/otp/send
+
+
+ENDPOINT 4: VERIFY OTP (LOGIN - 2FA)
+──────────────────────────────────────
+POST /api/auth/verify-otp
+Content-Type: application/json
+
+REQUEST:
+{
+  "email": "user@example.com",
+  "otp": "123456"
+}
+
+RESPONSE (200/201):
+{
+  "token": "eyJhbGciOiJIUzI1NiIs...",  ← Required
+  "email": "user@example.com",          ← Optional
+  "userId": "user_123"                   ← Optional
+}
+
+ERROR RESPONSE:
+{
+  "code": 400,
+  "message": "Invalid OTP"
+}
+
+
+ENDPOINT 5: VERIFY OTP (PASSWORD RESET)
+─────────────────────────────────────────
+POST /api/auth/login/backup-code
+Content-Type: application/json
+
+REQUEST:
+{
+  "email": "user@example.com",
+  "otp": "123456"
+}
+
+RESPONSE (200/201):
+{
+  "verified": true,
+  "message": "OTP verified. Proceed to set new password"
+}
+
+ERROR RESPONSE:
+{
+  "code": 400,
+  "message": "Invalid or expired OTP"
+}
+
+
+═══════════════════════════════════════════════════════════════════════════════
+                             USAGE IN YOUR UI
+═══════════════════════════════════════════════════════════════════════════════
+
+SIGNUP FLOW
+───────────
+
+1. Send OTP:
+   context.read<SignupBloc>().add(
+     SendSignupOtpEvent(email: "user@example.com")
+   );
+
+   States to handle:
+   - SendOtpLoadingState → Show spinner
+   - SendOtpSuccessState → Show OTP form
+   - SendOtpErrorState → Show error message
+
+2. Verify & Register:
+   context.read<SignupBloc>().add(
+     VerifySignupOtpEvent(
+       email: "user@example.com",
+       otpCode: "123456",
+       username: "testuser",
+       password: "TestPassword123!"
+     )
+   );
+
+   States to handle:
+   - VerifyOtpLoadingState → Show loading
+   - VerifyOtpSuccessState → Token saved, navigate to home
+   - VerifyOtpErrorState → Show error message
+
+
+LOGIN FLOW (with 2FA)
+─────────────────────
+
+1. Send OTP:
+   context.read<OtpVerificationBloc>().add(
+     SendOtpEvent(
+       email: "user@example.com",
+       purpose: OtpPurpose.login
+     )
+   );
+
+   States to handle:
+   - SendOtpLoadingState → Show spinner
+   - SendOtpSuccessState → Show OTP input
+   - SendOtpErrorState → Show error
+
+2. Verify OTP:
+   context.read<OtpVerificationBloc>().add(
+     OtpVerifyEvent(
+       email: "user@example.com",
+       otpNumber: "123456"
+     )
+   );
+
+   States to handle:
+   - OtpVerifyLoadingState → Show loading
+   - OtpVerificationSuccessState → Token saved, navigate to home
+   - OtpVerificationErrorState → Show error
+
+
+PASSWORD RESET FLOW
+───────────────────
+
+1. Send OTP:
+   context.read<OtpVerificationBloc>().add(
+     SendOtpEvent(
+       email: "user@example.com",
+       purpose: OtpPurpose.passwordReset
+     )
+   );
+
+2. Verify OTP:
+   context.read<OtpVerificationBloc>().add(
+     PasswordOtpVerifyEvent(
+       email: "user@example.com",
+       otpNumber: "123456"
+     )
+   );
+
+   States to handle:
+   - PasswordOtpVerifyLoadingState → Show loading
+   - PasswordOtpVerificationSuccessState → Show new password form
+   - PasswordOtpVerificationErrorState → Show error
+
+3. Set New Password (separate flow):
+   - Call backend endpoint to change password
+   - Include verified OTP or token
+
+
+═══════════════════════════════════════════════════════════════════════════════
+                            TESTING CHECKLIST
+═══════════════════════════════════════════════════════════════════════════════
+
+SIGNUP TEST:
+☐ POST /api/auth/register/otp/send works
+☐ Response includes { sent: true, message: "..." }
+☐ OTP is sent to email
+☐ OTP is logged in backend console (for testing)
+☐ POST /api/auth/register accepts { email, otpCode, username, password }
+☐ Response includes { token, email, userId }
+☐ Token is saved to SharedPreferences
+☐ User can login after signup
+
+LOGIN OTP TEST:
+☐ POST /api/v1/send-otp works
+☐ OTP sent to email
+☐ POST /api/auth/verify-otp accepts { email, otp }
+☐ Response includes { token, ... }
+☐ Token is saved to SharedPreferences
+☐ User is authenticated
+
+PASSWORD RESET TEST:
+☐ SendOtpEvent can be triggered
+☐ PasswordOtpVerifyEvent can be triggered
+☐ OTP is verified
+☐ Backend confirms password can be changed
+
+
+═══════════════════════════════════════════════════════════════════════════════
+                            CURRENT STATE TRACKING
+═══════════════════════════════════════════════════════════════════════════════
+
+SIGNUP BLoC (/sign_up/):
+✅ SignupBloc → Event handlers added
+✅ SendSignupOtpEvent → Defined
+✅ VerifySignupOtpEvent → Defined
+✅ SendOtpLoadingState → Defined
+✅ SendOtpSuccessState → Defined
+✅ SendOtpErrorState → Defined
+✅ VerifyOtpLoadingState → Defined
+✅ VerifyOtpSuccessState → Defined
+✅ VerifyOtpErrorState → Defined
+✅ sendSignupOtp() → Saves token/email/userId
+✅ verifySignupOtpAndRegister() → Saves token/email/userId
+
+OTP VERIFICATION BLoC (/otp_verification/):
+✅ OtpVerificationBloc → Event handlers updated
+✅ SendOtpEvent → Updated with purpose enum
+✅ OtpVerifyEvent → Defined
+✅ PasswordOtpVerifyEvent → Defined
+✅ SendOtpLoadingState → NEW
+✅ SendOtpSuccessState → Updated
+✅ SendOtpErrorState → Updated
+✅ OtpVerifyLoadingState → NEW
+✅ OtpVerificationSuccessState → Defined
+✅ OtpVerificationErrorState → Defined
+✅ PasswordOtpVerifyLoadingState → NEW
+✅ PasswordOtpVerificationSuccessState → Defined
+✅ PasswordOtpVerificationErrorState → Defined
+✅ otpVrification() → Saves token/email/userId
+✅ passwordOtpVrification() → Improved error handling
+✅ sendOTP() → Improved error handling
+
+
+═══════════════════════════════════════════════════════════════════════════════
+                         IMPORTANT NOTES
+═══════════════════════════════════════════════════════════════════════════════
+
+1. FIELD NAME: "otpCode" vs "otp"
+   - SignUp uses: "otpCode"
+   - Login/Password Reset uses: "otp"
+   - Confirm this matches your backend
+
+2. API VERSIONS: v1 vs v2
+   - Some endpoints are v1 (/api/v1/send-otp)
+   - Others are v2 (/api/auth/register)
+   - Consider standardizing to v2
+
+3. TOKEN STORAGE:
+   - Token is now saved after signup ✅
+   - Token is saved after login OTP ✅
+   - SharedPref key: KeyString.authTokenKey.name
+
+4. USER INFO STORAGE:
+   - Email saved: KeyString.userEmail.name
+   - UserId saved: KeyString.userID.name
+   - These are used by savedUserInfoData() flow
+
+5. ERROR HANDLING:
+   - All methods now have null-safe error extraction
+   - Descriptive error messages included
+   - Catches exceptions properly
+
+6. LOADING STATES:
+   - All async operations now emit loading state
+   - UI can show spinners during operations
+   - Better UX
+
+
+═══════════════════════════════════════════════════════════════════════════════
+                        NEXT STEPS FOR YOU
+═══════════════════════════════════════════════════════════════════════════════
+
+1. VERIFY BACKEND
+   ☐ Confirm all endpoints exist
+   ☐ Confirm request/response formats
+   ☐ Confirm field names ("otpCode" vs "otp")
+   ☐ Test with cURL or Postman
+
+2. CREATE UI SCREENS
+   ☐ SignUp OTP screen
+   ☐ Login OTP verification screen
+   ☐ Password reset OTP screen
+
+3. INTEGRATE WITH ROUTER
+   ☐ Add signup route
+   ☐ Add login route
+   ☐ Add password reset route
+   ☐ Handle navigation after OTP success
+
+4. TEST FLOWS
+   ☐ Test signup with OTP
+   ☐ Test login with OTP (2FA)
+   ☐ Test password reset with OTP
+   ☐ Test error scenarios
+
+5. OPTIONAL ENHANCEMENTS
+   ☐ Add OTP countdown timer
+   ☐ Add resend OTP button
+   ☐ Add input validation
+   ☐ Add analytics/logging
+   ☐ Add offline support
+
+═══════════════════════════════════════════════════════════════════════════════
+                            QUICK REFERENCE
+═══════════════════════════════════════════════════════════════════════════════
+
+SIGNUP:
+Event: SendSignupOtpEvent(email)
+Event: VerifySignupOtpEvent(email, otpCode, username, password)
+Service: SignupService.sendSignupOtp()
+Service: SignupService.verifySignupOtpAndRegister()
+
+LOGIN 2FA:
+Event: SendOtpEvent(email, purpose: OtpPurpose.login)
+Event: OtpVerifyEvent(email, otpNumber)
+Service: OTPVerificationService.sendOTP()
+Service: OTPVerificationService.otpVrification()
+
+PASSWORD RESET:
+Event: SendOtpEvent(email, purpose: OtpPurpose.passwordReset)
+Event: PasswordOtpVerifyEvent(email, otpNumber)
+Service: OTPVerificationService.sendOTP()
+Service: OTPVerificationService.passwordOtpVrification()
+
+═══════════════════════════════════════════════════════════════════════════════
+
+Ready to integrate! Follow the testing checklist above.

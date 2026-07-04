@@ -17,7 +17,11 @@ class LoginService {
       if (response.statusCode == 200 || response.statusCode == 201) {
         await SharedPref.setStringValue(
           KeyString.authTokenKey.name,
-          response.data['token'],
+          response.data['accessToken'],
+        );
+        await SharedPref.setStringValue(
+          KeyString.refreshTokenKey.name,
+          response.data['refreshToken'],
         );
         await SharedPref.setStringValue(
           KeyString.userEmail.name,

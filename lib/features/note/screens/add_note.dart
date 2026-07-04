@@ -57,14 +57,7 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
     ];
   }
 
-  // void _saveDraft() {
-  //   if (_formKey.currentState?.validate() ?? false) {
-  //     // TODO: Implement save draft functionality
-  //     ScaffoldMessenger.of(
-  //       context,
-  //     ).showSnackBar(const SnackBar(content: Text('Draft saved successfully')));
-  //   }
-  // }
+
 
   void _createNote() {
     if (_formKey.currentState?.validate() ?? false) {

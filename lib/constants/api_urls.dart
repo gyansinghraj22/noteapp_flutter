@@ -23,6 +23,11 @@ class ApiUrls {
   static const String signUpOtp = "api/auth/register/otp/send";
   static const String captchaChallenge = '/api/auth/captcha/challenge';
 
+  static const String getUserProfile = 'api/v1/user-profile';
+  static const String updateUserProfile = 'api/v1/update/user-details';
+
+  static const String notes = "api/notes";
+
   static const String downloadNetworkExcelFile =
       'api/v1/export-zip/excel/networkID';
   static const String downloadNetworkCSVFile =

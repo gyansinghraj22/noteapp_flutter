@@ -16,6 +16,7 @@ import 'package:noteapp/core/splash/splash_screen.dart';
 import 'package:noteapp/core/utils/shared_pref.dart';
 import 'package:noteapp/features/captcha/bloc/catpcha_bloc.dart';
 import 'package:noteapp/features/login/bloc/login_bloc.dart';
+import 'package:noteapp/features/note/bloc/note_bloc.dart';
 import 'package:noteapp/features/otp_verification/bloc/otp_verification_bloc.dart';
 import 'package:noteapp/features/otp_verification/cubit/resend_timer_cubit.dart';
 import 'package:noteapp/features/profile/bloc/profile_bloc.dart';
@@ -72,6 +73,7 @@ class MyApp extends StatelessWidget {
         BlocProvider<OtpVerificationBloc>(
           create: (BuildContext context) => OtpVerificationBloc(),
         ),
+        BlocProvider<NoteBloc>(create: (BuildContext context) => NoteBloc()),
 
         // BlocProvider<ExportFileBloc>(
         //   create: (BuildContext context) => ExportFileBloc(),

@@ -4,6 +4,7 @@ enum KeyString {
   loginRemember,
   onboardUser,
   authTokenKey,
+  refreshTokenKey,
   userEmail,
   networkName,
   userID,

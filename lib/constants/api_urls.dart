@@ -27,6 +27,7 @@ class ApiUrls {
   static const String updateUserProfile = 'api/v1/update/user-details';
 
   static const String notes = "api/notes";
+  static const String tags = "api/tags";
 
   static const String downloadNetworkExcelFile =
       'api/v1/export-zip/excel/networkID';

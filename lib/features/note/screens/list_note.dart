@@ -21,9 +21,7 @@ class ListNoteScreenState extends State<ListNoteScreen> {
 
   bool isFetchingNotes = false;
 
-  String selectedCategory = "All";
-
-  final List<String> categories = ["All"];
+  String selectedTag = 'All';
 
   @override
   void initState() {
@@ -57,41 +55,33 @@ class ListNoteScreenState extends State<ListNoteScreen> {
   }
 
   List<Map<String, dynamic>> _extractNotes(dynamic response) {
-    if (response is List) {
-      return response.whereType<Map<String, dynamic>>().toList();
-    }
+    final data =
+        response is List
+            ? response
+            : response is Map<String, dynamic>
+            ? response['data'] ??
+                response['notes'] ??
+                response['items'] ??
+                response['results']
+            : const [];
 
-    if (response is Map<String, dynamic>) {
-      final potentialLists = [
-        response['data'],
-        response['notes'],
-        response['items'],
-        response['results'],
-      ];
-
-      for (final entry in potentialLists) {
-        if (entry is List) {
-          return entry.whereType<Map<String, dynamic>>().toList();
-        }
-
-        if (entry is Map<String, dynamic>) {
-          final nestedList = [
-            entry['data'],
-            entry['notes'],
-            entry['items'],
-            entry['results'],
-          ];
-
-          for (final nestedEntry in nestedList) {
-            if (nestedEntry is List) {
-              return nestedEntry.whereType<Map<String, dynamic>>().toList();
-            }
-          }
-        }
-      }
+    if (data is List) {
+      return data.whereType<Map<String, dynamic>>().toList();
     }
 
     return [];
+  }
+
+  List<String> _extractTags(List<Map<String, dynamic>> notes) {
+    final tags =
+        notes
+            .expand((note) => (note['tags'] as List? ?? const []))
+            .map((tag) => tag.toString())
+            .where((tag) => tag.isNotEmpty)
+            .toSet()
+            .toList();
+    tags.sort();
+    return ['All', ...tags];
   }
 
   String _readStringField(Map<String, dynamic> note, List<String> keys) {
@@ -101,60 +91,34 @@ class ListNoteScreenState extends State<ListNoteScreen> {
         return value.toString();
       }
     }
-
     return '';
-  }
-
-  String _formatNoteTime(Map<String, dynamic> note) {
-    final rawValue = _readStringField(note, ['time', 'createdAt', 'updatedAt']);
-    if (rawValue.isEmpty) {
-      return 'Just now';
-    }
-
-    return rawValue;
-  }
-
-  String _normalizeCategory(Map<String, dynamic> note) {
-    final category = _readStringField(note, ['category', 'tag', 'tags']);
-    if (category.isEmpty) {
-      return 'General';
-    }
-
-    return category;
-  }
-
-  List<String> _noteCategories(List<Map<String, dynamic>> notes) {
-    final categories =
-        notes
-            .map((note) => _normalizeCategory(note))
-            .where((category) => category.isNotEmpty)
-            .toSet()
-            .toList();
-    categories.sort();
-    return ['All', ...categories];
   }
 
   List<Map<String, dynamic>> _filterNotes(List<Map<String, dynamic>> notes) {
     final searchText = (formData['search'] ?? '').toString().toLowerCase();
 
     return notes.where((note) {
-      final category = _normalizeCategory(note);
-      final title = _readStringField(note, ['title', 'name', 'subject']);
-      final description = _readStringField(note, [
-        'desc',
-        'description',
-        'content',
-        'body',
-      ]);
+      final title =
+          _readStringField(note, ['title', 'name', 'subject']).toLowerCase();
+      final content =
+          _readStringField(note, [
+            'content',
+            'description',
+            'desc',
+            'body',
+          ]).toLowerCase();
+      final noteTags =
+          (note['tags'] as List? ?? const [])
+              .map((tag) => tag.toString())
+              .toList();
 
-      final matchesCategory =
-          selectedCategory == 'All' || category == selectedCategory;
+      final matchesTag = selectedTag == 'All' || noteTags.contains(selectedTag);
       final matchesSearch =
           searchText.isEmpty ||
-          title.toLowerCase().contains(searchText) ||
-          description.toLowerCase().contains(searchText);
+          title.contains(searchText) ||
+          content.contains(searchText);
 
-      return matchesCategory && matchesSearch;
+      return matchesTag && matchesSearch;
     }).toList();
   }
 
@@ -173,10 +137,10 @@ class ListNoteScreenState extends State<ListNoteScreen> {
                 ? _extractNotes(state.response)
                 : const <Map<String, dynamic>>[];
         final visibleNotes = _filterNotes(notes);
-        final noteCategories = _noteCategories(notes);
+        final filterTags = _extractTags(notes);
 
-        if (!noteCategories.contains(selectedCategory)) {
-          selectedCategory = 'All';
+        if (!filterTags.contains(selectedTag)) {
+          selectedTag = 'All';
         }
 
         return RefreshIndicator(
@@ -243,7 +207,7 @@ class ListNoteScreenState extends State<ListNoteScreen> {
               SliverPadding(
                 padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.w),
                 sliver: SliverToBoxAdapter(
-                  child: _horizontalFilterSection(noteCategories),
+                  child: _horizontalFilterSection(filterTags),
                 ),
               ),
 
@@ -315,13 +279,13 @@ class ListNoteScreenState extends State<ListNoteScreen> {
         separatorBuilder: (context, index) => SizedBox(width: 8.w),
         itemBuilder: (context, index) {
           final category = filterCategories[index];
-          final isSelected = category == selectedCategory;
+          final isSelected = category == selectedTag;
           return FilterChip(
             label: Text(category),
             selected: isSelected,
             onSelected: (selected) {
               setState(() {
-                selectedCategory = category;
+                selectedTag = category;
               });
             },
             backgroundColor: Theme.of(context).colorScheme.surface,
@@ -345,14 +309,25 @@ class ListNoteScreenState extends State<ListNoteScreen> {
 
   Widget _buildNoteCard(Map<String, dynamic> note) {
     final title = _readStringField(note, ['title', 'name', 'subject']);
-    final description = _readStringField(note, [
-      'desc',
-      'description',
+    final content = _readStringField(note, [
       'content',
+      'description',
+      'desc',
       'body',
     ]);
-    final category = _normalizeCategory(note);
-    final time = _formatNoteTime(note);
+    final tagList =
+        (note['tags'] as List? ?? const [])
+            .map((tag) => tag.toString())
+            .where((tag) => tag.isNotEmpty)
+            .toList();
+    final time =
+        _readStringField(note, [
+              'lastEditedAt',
+              'updatedAt',
+              'createdAt',
+            ]).isNotEmpty
+            ? _readStringField(note, ['lastEditedAt', 'updatedAt', 'createdAt'])
+            : 'Just now';
 
     return Container(
       padding: EdgeInsets.all(16.w),
@@ -391,7 +366,7 @@ class ListNoteScreenState extends State<ListNoteScreen> {
 
           // Description
           Text(
-            description.isEmpty ? 'No description available' : description,
+            content.isEmpty ? 'No description available' : content,
             style: TextStyle(
               color: Theme.of(context).colorScheme.onSurface.withOpacity(0.8),
             ),
@@ -400,16 +375,51 @@ class ListNoteScreenState extends State<ListNoteScreen> {
           SizedBox(height: 8.h),
 
           // Category Tag
-          Container(
-            padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 4.h),
-            decoration: BoxDecoration(
-              color: AppColor.brightSkyMain.withAlpha(30),
-              borderRadius: BorderRadius.circular(10.r),
-            ),
-            child: Text(
-              category,
-              style: TextStyle(color: AppColor.brightSkyMain, fontSize: 12.sp),
-            ),
+          Wrap(
+            spacing: 8.w,
+            runSpacing: 8.h,
+            children:
+                tagList.isEmpty
+                    ? [
+                      Container(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 10.w,
+                          vertical: 4.h,
+                        ),
+                        decoration: BoxDecoration(
+                          color: AppColor.brightSkyMain.withAlpha(30),
+                          borderRadius: BorderRadius.circular(10.r),
+                        ),
+                        child: Text(
+                          'General',
+                          style: TextStyle(
+                            color: AppColor.brightSkyMain,
+                            fontSize: 12.sp,
+                          ),
+                        ),
+                      ),
+                    ]
+                    : tagList
+                        .map(
+                          (tag) => Container(
+                            padding: EdgeInsets.symmetric(
+                              horizontal: 10.w,
+                              vertical: 4.h,
+                            ),
+                            decoration: BoxDecoration(
+                              color: AppColor.brightSkyMain.withAlpha(30),
+                              borderRadius: BorderRadius.circular(10.r),
+                            ),
+                            child: Text(
+                              tag,
+                              style: TextStyle(
+                                color: AppColor.brightSkyMain,
+                                fontSize: 12.sp,
+                              ),
+                            ),
+                          ),
+                        )
+                        .toList(),
           ),
         ],
       ),

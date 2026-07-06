@@ -22,6 +22,7 @@ import 'package:noteapp/features/otp_verification/cubit/resend_timer_cubit.dart'
 import 'package:noteapp/features/profile/bloc/profile_bloc.dart';
 import 'package:noteapp/features/reset_password/bloc/reset_password_bloc.dart';
 import 'package:noteapp/features/sign_up/bloc/signup_bloc.dart';
+import 'package:noteapp/features/tags/bloc/tag_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
 void main() async {
@@ -74,6 +75,7 @@ class MyApp extends StatelessWidget {
           create: (BuildContext context) => OtpVerificationBloc(),
         ),
         BlocProvider<NoteBloc>(create: (BuildContext context) => NoteBloc()),
+        BlocProvider<TagBloc>(create: (BuildContext context) => TagBloc()),
 
         // BlocProvider<ExportFileBloc>(
         //   create: (BuildContext context) => ExportFileBloc(),

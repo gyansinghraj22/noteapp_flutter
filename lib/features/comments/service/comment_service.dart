@@ -10,7 +10,7 @@ class CommentService {
     required String noteId,
   }) async {
     try {
-      var response = await apiCall.getData("ApiUrls.notes/{$noteId}/comments");
+      var response = await apiCall.getData("${ApiUrls.notes}/$noteId/comments");
       if (response.statusCode == 200 || response.statusCode == 201) {
         return left(response.data);
       } else {
@@ -32,7 +32,7 @@ class CommentService {
   }) async {
     try {
       var response = await apiCall.postData(
-        "ApiUrls.notes/{$noteId}/comments",
+        "${ApiUrls.notes}/{$noteId}/comments",
         formData,
       );
       if (response.statusCode == 200 || response.statusCode == 201) {

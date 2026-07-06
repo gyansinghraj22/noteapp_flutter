@@ -1,4 +1,5 @@
 import 'package:dartz/dartz.dart';
+import 'package:noteapp/constants/api_urls.dart';
 import 'package:noteapp/core/common/error_model/error_model.dart';
 import 'package:noteapp/core/network/dio_client.dart';
 
@@ -9,7 +10,9 @@ class AttachmentService {
     required String noteId,
   }) async {
     try {
-      var response = await apiCall.getData("notes/$noteId/attachments");
+      var response = await apiCall.getData(
+        "${ApiUrls.notes}/$noteId/attachments",
+      );
       if (response.statusCode == 200 || response.statusCode == 201) {
         return left(response.data);
       } else {
@@ -33,7 +36,7 @@ class AttachmentService {
   }) async {
     try {
       var response = await apiCall.postData(
-        "notes/$noteId/attachments",
+        "${ApiUrls.notes}/$noteId/attachments",
         formData,
       );
       if (response.statusCode == 200 || response.statusCode == 201) {
@@ -58,9 +61,7 @@ class AttachmentService {
     required String attachmentId,
   }) async {
     try {
-      var response = await apiCall.deleteData(
-        "notes/$noteId/attachments/$attachmentId",
-      );
+      var response = await apiCall.deleteData("api/attachments/$attachmentId");
       if (response.statusCode == 200 || response.statusCode == 201) {
         return left(response.data);
       } else {

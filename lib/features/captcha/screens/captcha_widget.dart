@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -189,7 +190,6 @@ class _CaptchaWidgetState extends State<CaptchaWidget> {
               decoration: BoxDecoration(
                 border: Border.all(color: Colors.grey.shade300),
                 borderRadius: BorderRadius.circular(12),
-                color: Colors.white,
               ),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
@@ -218,27 +218,23 @@ class _CaptchaWidgetState extends State<CaptchaWidget> {
                     ],
                   ),
                   const SizedBox(height: 16),
-                  Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.all(14),
-                    decoration: BoxDecoration(
-                      color: Colors.blue.shade50,
-                      borderRadius: BorderRadius.circular(10),
-                      border: Border.all(color: Colors.blue.shade100),
-                    ),
-                    child: Text(
-                      captcha.question,
-                      style: const TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
+
+                  CustomPaint(
+                    size: const Size(180, 60),
+                    painter: CaptchaPainter(captcha.question),
                   ),
-                  const SizedBox(height: 12),
                   Text(
-                    'Captcha ID: ${captcha.captchaId}',
-                    style: TextStyle(color: Colors.grey.shade600, fontSize: 12),
+                    captcha.question,
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
+                  // const SizedBox(height: 12),
+                  // Text(
+                  //   'Captcha ID: ${captcha.captchaId}',
+                  //   style: TextStyle(color: Colors.grey.shade600, fontSize: 12),
+                  // ),
                   const SizedBox(height: 16),
                   TextField(
                     controller: _answerController,
@@ -345,4 +341,64 @@ class _CaptchaWidgetState extends State<CaptchaWidget> {
       ),
     );
   }
+}
+
+class CaptchaPainter extends CustomPainter {
+  final String text;
+  CaptchaPainter(this.text);
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint =
+        Paint()
+          ..color = Colors.grey.shade300
+          ..style = PaintingStyle.fill;
+    canvas.drawRect(Rect.fromLTWH(0, 0, size.width-20, size.height), paint);
+
+    // Draw random distortion lines
+    final random = Random();
+    final linePaint = Paint()..strokeWidth = 2;
+    for (int i = 0; i < 5; i++) {
+      linePaint.color = Colors
+          .primaries[random.nextInt(Colors.primaries.length)]
+          .withOpacity(0.5);
+      canvas.drawLine(
+        Offset(
+          random.nextDouble() * size.width,
+          random.nextDouble() * size.height,
+        ),
+        Offset(
+          random.nextDouble() * size.width,
+          random.nextDouble() * size.height,
+        ),
+        linePaint,
+      );
+    }
+
+    // Draw the CAPTCHA text characters
+    for (int i = 0; i < text.length; i++) {
+      final textPainter = TextPainter(
+        text: TextSpan(
+          text: text[i],
+          style: TextStyle(
+            color: Colors.primaries[random.nextInt(Colors.primaries.length)],
+            fontSize: 28,
+            fontWeight: FontWeight.bold,
+            fontStyle: random.nextBool() ? FontStyle.italic : FontStyle.normal,
+          ),
+        ),
+        textDirection: TextDirection.ltr,
+      )..layout();
+
+      canvas.save();
+      // Apply slight rotation transformations to confuse simple screen scrapers
+      canvas.translate(15.0 + (i * 25), 15.0 + random.nextInt(10));
+      canvas.rotate((random.nextInt(20) - 10) * pi / 180);
+      textPainter.paint(canvas, const Offset(0, 0));
+      canvas.restore();
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => true;
 }

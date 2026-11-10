@@ -2,7 +2,6 @@ class ApiUrls {
   static const String qaBaseUrl = '';
 
   // static const String liveBaseUrl = 'http://localhost:8080';
-
   // static const String devBaseUrl = 'https://api.dev.proflowapps.com/api/v1/';
   static const String devBaseUrl = 'http://192.168.1.12:8080/';
 
@@ -11,6 +10,7 @@ class ApiUrls {
 
   static const String stagingBaseUrl = '';
   static const String login = 'api/auth/login';
+  static const String googleLogin = 'api/auth/google';
   static const String loginOtp = 'api/auth/login/otp';
   static const String loginhBackUpCode = 'api/auth/login/backup-code';
   static const String enable2FA = 'api/auth/2fa/enable';
@@ -35,7 +35,6 @@ class ApiUrls {
       'api/v1/export-zip/csv/networkID';
   static const String resetPassword = 'api/v1/change-password';
   static const String uploadProfilePicture = 'api/v1/profile-picture';
-  // static const String register = 'api/v1/register';
 
   static const String allowedParentList =
       'api/v1/allowed-parent/networkID/memberID';
@@ -58,6 +57,7 @@ class ApiUrls {
 
 final List<String> noAuthPaths = [
   ApiUrls.login,
+  ApiUrls.googleLogin,
   ApiUrls.register,
   ApiUrls.sendOtp,
   ApiUrls.verifyOTP,

@@ -4,6 +4,7 @@ import 'package:noteapp/core/network/dio_client.dart';
 import 'package:noteapp/core/services/image_upload_service.dart';
 import 'package:noteapp/features/captcha/bloc/catpcha_bloc.dart';
 import 'package:noteapp/features/captcha/service/captcha_service.dart';
+import 'package:noteapp/features/login/services/google_login_service.dart';
 import 'package:noteapp/features/login/services/login_service.dart';
 import 'package:noteapp/features/note/bloc/note_bloc.dart';
 import 'package:noteapp/features/note/services/note_services.dart';
@@ -17,13 +18,15 @@ import 'package:noteapp/features/sign_up/services/signup_service.dart';
 final getIt = GetIt.instance;
 
 Future<void> setUpDi(String baseUrl) async {
-  // dio client
   getIt.registerLazySingleton<DioClient>(() => DioClient(baseUrl: baseUrl));
   getIt.registerLazySingleton<ImageUploadService>(
     () => ImageUploadService(getIt()),
   );
   getIt.registerLazySingleton<SignupService>(() => SignupService(getIt()));
   getIt.registerLazySingleton<LoginService>(() => LoginService(getIt()));
+  getIt.registerLazySingleton<GoogleLoginService>(
+    () => GoogleLoginService(getIt()),
+  );
   getIt.registerLazySingleton<NoteServices>(() => NoteServices(getIt()));
   getIt.registerLazySingleton<TagService>(() => TagService(getIt()));
   getIt.registerLazySingleton<CaptchaService>(() => CaptchaService(getIt()));

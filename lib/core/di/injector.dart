@@ -1,21 +1,5 @@
 import 'package:get_it/get_it.dart';
-import 'package:noteapp/core/common/loading_overlay/loading_overlay.dart';
-import 'package:noteapp/core/network/dio_client.dart';
-import 'package:noteapp/core/services/image_upload_service.dart';
-import 'package:noteapp/features/captcha/bloc/catpcha_bloc.dart';
-import 'package:noteapp/features/captcha/service/captcha_service.dart';
-import 'package:noteapp/features/login/services/google_login_service.dart';
-import 'package:noteapp/features/login/services/login_service.dart';
-import 'package:noteapp/features/note/bloc/note_bloc.dart';
-import 'package:noteapp/features/note/services/note_services.dart';
-import 'package:noteapp/features/tags/bloc/tag_bloc.dart';
-import 'package:noteapp/features/tags/service/tag_service.dart';
-import 'package:noteapp/features/otp_verification/services/otp_verification_service.dart';
-import 'package:noteapp/features/profile/services/profile_service.dart';
-import 'package:noteapp/features/reset_password/services/reset_password_service.dart';
-import 'package:noteapp/features/sign_up/services/signup_service.dart';
-
-final getIt = GetIt.instance;
+import 'package:noteapp/features/chat/service/chat_service.dart';
 
 Future<void> setUpDi(String baseUrl) async {
   getIt.registerLazySingleton<DioClient>(() => DioClient(baseUrl: baseUrl));
@@ -28,6 +12,7 @@ Future<void> setUpDi(String baseUrl) async {
     () => GoogleLoginService(getIt()),
   );
   getIt.registerLazySingleton<NoteServices>(() => NoteServices(getIt()));
+  getIt.registerLazySingleton<ChatService>(() => ChatService(getIt()));
   getIt.registerLazySingleton<TagService>(() => TagService(getIt()));
   getIt.registerLazySingleton<CaptchaService>(() => CaptchaService(getIt()));
   getIt.registerSingleton<LoadingOverlay>(LoadingOverlay());

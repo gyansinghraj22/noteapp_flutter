@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get_it/get_it.dart';
-import 'package:noteapp/core/common/error_model/error_model.dart';
 import 'package:noteapp/features/chat/service/chat_service.dart';
 
 class ChatHomeScreen extends StatefulWidget {
@@ -34,9 +33,7 @@ class _ChatHomeScreenState extends State<ChatHomeScreen>
       return;
     }
 
-    if (!mounted) {
-      return;
-    }
+    if (!mounted) return;
 
     setState(() {
       _isLoading = true;
@@ -59,31 +56,6 @@ class _ChatHomeScreenState extends State<ChatHomeScreen>
       setState(() {
         _isLoading = false;
       });
-    }
-  }
-
-  String _formatTime(String? dateTime) {
-    if (dateTime == null || dateTime.isEmpty) {
-      return 'Just now';
-    }
-
-    try {
-      final parsed = DateTime.parse(dateTime);
-      final now = DateTime.now();
-      final difference = now.difference(parsed);
-
-      if (difference.inDays > 0) {
-        return '${difference.inDays}d ago';
-      }
-      if (difference.inHours > 0) {
-        return '${difference.inHours}h ago';
-      }
-      if (difference.inMinutes > 0) {
-        return '${difference.inMinutes}m ago';
-      }
-      return 'Just now';
-    } catch (_) {
-      return 'Recently';
     }
   }
 
@@ -368,6 +340,31 @@ class _ChatHomeScreenState extends State<ChatHomeScreen>
       ),
     );
   }
+
+  String _formatTime(String? dateTime) {
+    if (dateTime == null || dateTime.isEmpty) {
+      return 'Just now';
+    }
+
+    try {
+      final parsed = DateTime.parse(dateTime);
+      final now = DateTime.now();
+      final difference = now.difference(parsed);
+
+      if (difference.inDays > 0) {
+        return '${difference.inDays}d ago';
+      }
+      if (difference.inHours > 0) {
+        return '${difference.inHours}h ago';
+      }
+      if (difference.inMinutes > 0) {
+        return '${difference.inMinutes}m ago';
+      }
+      return 'Just now';
+    } catch (_) {
+      return 'Recently';
+    }
+  }
 }
 
 class ChatDetailScreen extends StatefulWidget {
@@ -383,7 +380,9 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
   final TextEditingController _messageController = TextEditingController();
   final ChatService _chatService = GetIt.instance.get<ChatService>();
 
-  late final int _conversationId = (widget.conversation['id'] as num?)?.toInt() ?? 0;
+  late final int _conversationId =
+      (widget.conversation['id'] as num?)?.toInt() ?? 0;
+
   final List<Map<String, dynamic>> _messages = [];
   bool _isLoading = false;
   bool _isSending = false;
@@ -405,9 +404,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
       return;
     }
 
-    if (!mounted) {
-      return;
-    }
+    if (!mounted) return;
 
     setState(() {
       _isLoading = true;

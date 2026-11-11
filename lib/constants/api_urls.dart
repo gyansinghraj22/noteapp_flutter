@@ -28,6 +28,8 @@ class ApiUrls {
 
   static const String notes = "api/notes";
   static const String tags = "api/tags";
+  static const String chatConversations = 'api/chat/conversations';
+  static const String chatMessages = 'api/chat/messages';
 
   static const String downloadNetworkExcelFile =
       'api/v1/export-zip/excel/networkID';
